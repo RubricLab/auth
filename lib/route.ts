@@ -1,5 +1,5 @@
 import { type NextRequest, NextResponse } from 'next/server'
-import type { AuthProviders, DB, UserInfo, AuthProvider, AuthTokens } from './types'
+import type { AuthProvider, AuthProviders, AuthTokens, DB, UserInfo } from './types'
 
 async function connectAuthProvider({
 	userId,
