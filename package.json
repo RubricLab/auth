@@ -1,0 +1,24 @@
+{
+  "scripts": {
+    "generate": "bun scripts/generate.ts",
+    "watch": "bun scripts/watch.ts",
+    "prepare": "bun x simple-git-hooks",
+    "bleed": "bun x npm-check-updates -u && bun i",
+    "clean": "rm -rf .next && rm -rf node_modules",
+    "format": "bun x biome format --write .",
+    "lint": "bun x biome check .",
+    "lint:fix": "bun x biome lint . --write --unsafe"
+  },
+  "name": "@rubriclab/auth",
+  "version": "0.0.1",
+  "main": "index.ts",
+  "dependencies": {
+    "@rubriclab/package": "*"
+  },
+  "simple-git-hooks": {
+    "post-commit": "bun run rubriclab-postcommit"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}
