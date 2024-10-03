@@ -1,59 +1,59 @@
-import type { Prisma } from "@prisma/client";
+import type { Prisma } from '@prisma/client'
 
-import type { AuthProviders } from "./types";
+import type { AuthProviders } from './types'
 
 export function createAuthActions({
 	authProviders,
-	db,
+	db
 }: {
-	authProviders: AuthProviders;
+	authProviders: AuthProviders
 	db: {
-		authProvider: Prisma.AuthProviderDelegate;
-	};
+		authProvider: Prisma.AuthProviderDelegate
+	}
 }) {
 	return {
 		async getAuthUrl({
 			userId,
-			provider,
+			provider
 		}: {
-			userId: string;
-			provider: string;
+			userId: string
+			provider: string
 		}) {
-			const authProvider = authProviders[provider];
+			const authProvider = authProviders[provider]
 
 			if (!authProvider) {
-				throw new Error(`Auth provider not found for ${provider}`);
+				throw new Error(`Auth provider not found for ${provider}`)
 			}
 
-			return authProvider.getAuthUrl({ userId });
+			return authProvider.getAuthUrl({ userId })
 		},
 
 		async getConnectedAccounts({ userId }: { userId: string }) {
 			const connectedAccounts = await db.authProvider.findMany({
-				where: { userId },
-			});
+				where: { userId }
+			})
 
-			return connectedAccounts;
+			return connectedAccounts
 		},
 
 		async disconnectAuthProvider({
 			userId,
 			provider,
-			accountId,
+			accountId
 		}: {
-			userId: string;
-			provider: string;
-			accountId: string;
+			userId: string
+			provider: string
+			accountId: string
 		}) {
 			await db.authProvider.delete({
 				where: {
 					userId_provider_accountId: {
 						userId,
 						provider,
-						accountId,
-					},
-				},
-			});
-		},
-	};
+						accountId
+					}
+				}
+			})
+		}
+	}
 }

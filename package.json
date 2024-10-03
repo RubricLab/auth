@@ -10,10 +10,11 @@
     "lint:fix": "bun x biome lint . --write --unsafe"
   },
   "name": "@rubriclab/auth",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "main": "index.ts",
   "dependencies": {
-    "@rubriclab/package": "*"
+    "@rubriclab/package": "*",
+    "@rubriclab/config": "*"
   },
   "simple-git-hooks": {
     "post-commit": "bun run rubriclab-postcommit"

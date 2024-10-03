@@ -1,4 +1,4 @@
 export type {
 	AuthProvider,
-	AuthProviderConfig,
-} from "./lib/types";
+	AuthProviderConfig
+} from './lib/types'
