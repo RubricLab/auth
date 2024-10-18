@@ -1,7 +1,8 @@
 export {
 	type AuthProvider,
 	type AuthProviderConfig,
-	zodSession
+	zodSession,
+	zodUser
 } from './lib/types'
 
 export { ClientAuthProvider, useSession } from './lib/provider'

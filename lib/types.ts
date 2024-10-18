@@ -1,12 +1,14 @@
 import type { PrismaClient } from '@prisma/client'
 import { z } from 'zod'
 
+export const zodUser = z.object({
+	id: z.string(),
+	authProviders: z.array(z.object({ provider: z.string(), accountId: z.string() }))
+})
+
 export const zodSession = z.object({
 	sessionKey: z.string(),
-	user: z.object({
-		id: z.string(),
-		authProviders: z.array(z.object({ provider: z.string(), accountId: z.string() }))
-	})
+	user: zodUser
 })
 
 export type Session = z.infer<typeof zodSession>
