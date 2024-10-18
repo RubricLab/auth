@@ -2,17 +2,21 @@ import type { Prisma } from '@prisma/client'
 
 import { type AuthProviders, zodSession, zodUser } from './types'
 
+import { redirect } from 'next/navigation'
+
 import { cookies } from 'next/headers'
 
 export function createAuthActions({
 	authProviders,
-	db
+	db,
+	unauthorizedUrl
 }: {
 	authProviders: AuthProviders
 	db: {
 		authProvider: Prisma.AuthProviderDelegate
 		user: Prisma.UserDelegate
 	}
+	unauthorizedUrl: string
 }) {
 	return {
 		async getAuthUrl({
@@ -64,17 +68,13 @@ export function createAuthActions({
 
 			const sessionKey = cookies().get('key')?.value
 
-			if (!user) {
-				return null
-			}
-
 			const { data, success } = zodSession.safeParse({
 				sessionKey,
 				user
 			})
 
 			if (!success) {
-				return null
+				redirect(unauthorizedUrl)
 			}
 
 			return data

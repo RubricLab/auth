@@ -1,3 +1,4 @@
+- [2024-10-18] [assert getSession has user or redirect to unauth url](https://github.com/RubricLab/auth/commit/939bc637013933cbbcb03f00753ebcbe500759bd)
 - [2024-10-18] [differentiate getSession / getUser](https://github.com/RubricLab/auth/commit/7362e36e1d37dd0cd348c7cef5cbe10e790e0c00)
 - [2024-10-18] [add more scope such as provider and session cookies to package](https://github.com/RubricLab/auth/commit/d0a9ebfb9d7e0358dd65f394e879bef21ade2722)
 - [2024-10-03] [release](https://github.com/RubricLab/auth/commit/5b29a0fc2dc85cfb5ad32be4b05c419640924c3d)
