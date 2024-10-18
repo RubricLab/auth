@@ -1,3 +1,4 @@
+- [2024-10-18] [add more scope such as provider and session cookies to package](https://github.com/RubricLab/auth/commit/d0a9ebfb9d7e0358dd65f394e879bef21ade2722)
 - [2024-10-03] [release](https://github.com/RubricLab/auth/commit/5b29a0fc2dc85cfb5ad32be4b05c419640924c3d)
 - [2024-10-03] [mod lint script](https://github.com/RubricLab/auth/commit/f06a0912e6b4e04ff260f44e263e6f396b44d9fb)
 - [2024-10-03] [gitignore turbo, format](https://github.com/RubricLab/auth/commit/cbd07d8b075bd67659bc067742302ef4fdbe0e17)

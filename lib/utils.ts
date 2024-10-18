@@ -1,6 +1,8 @@
 import type { Prisma } from '@prisma/client'
 
-import type { AuthProviders } from './types'
+import { type AuthProviders, zodSession } from './types'
+
+import { cookies } from 'next/headers'
 
 export function createAuthActions({
 	authProviders,
@@ -9,6 +11,7 @@ export function createAuthActions({
 	authProviders: AuthProviders
 	db: {
 		authProvider: Prisma.AuthProviderDelegate
+		user: Prisma.UserDelegate
 	}
 }) {
 	return {
@@ -54,6 +57,42 @@ export function createAuthActions({
 					}
 				}
 			})
+		},
+
+		async getSession(userId?: string) {
+			const user = userId
+				? await db.user.findUnique({
+						where: {
+							id: userId
+						},
+						select: {
+							id: true,
+							authProviders: {
+								select: {
+									provider: true,
+									accountId: true
+								}
+							}
+						}
+					})
+				: JSON.parse(cookies().get('user')?.value || '{}')
+
+			const sessionKey = cookies().get('key')?.value
+
+			if (!user) {
+				return null
+			}
+
+			const { data, success } = zodSession.safeParse({
+				sessionKey,
+				user
+			})
+
+			if (!success) {
+				return null
+			}
+
+			return data
 		}
 	}
 }
