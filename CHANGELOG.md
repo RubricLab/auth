@@ -1,3 +1,4 @@
+- [2024-10-31] [next auth 15 support awaited cookies](https://github.com/RubricLab/auth/commit/8444c6e86d48c4ab7b180e2001ad1fd713a6684d)
 - [2024-10-24] [add notify-monorepo action](https://github.com/RubricLab/auth/commit/d111b1ebaca5f3599f8477a5c61e15db60d86238)
 - [2024-10-18] [assert getSession has user or redirect to unauth url](https://github.com/RubricLab/auth/commit/939bc637013933cbbcb03f00753ebcbe500759bd)
 - [2024-10-18] [differentiate getSession / getUser](https://github.com/RubricLab/auth/commit/7362e36e1d37dd0cd348c7cef5cbe10e790e0c00)

@@ -64,9 +64,9 @@ export function createAuthActions({
 		},
 
 		async getSession() {
-			const user = JSON.parse(cookies().get('user')?.value || '{}')
+			const user = JSON.parse((await cookies()).get('user')?.value || '{}')
 
-			const sessionKey = cookies().get('key')?.value
+			const sessionKey = (await cookies()).get('key')?.value
 
 			const { data, success } = zodSession.safeParse({
 				sessionKey,
