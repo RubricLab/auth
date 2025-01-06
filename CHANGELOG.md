@@ -1,3 +1,4 @@
+- [2025-01-06] [Add protectRoute arg to getSession](https://github.com/RubricLab/auth/commit/76aa6c4df2d26fba87df6a89327991fcef06afb7)
 - [2024-10-31] [next auth 15 support awaited cookies](https://github.com/RubricLab/auth/commit/8444c6e86d48c4ab7b180e2001ad1fd713a6684d)
 - [2024-10-24] [add notify-monorepo action](https://github.com/RubricLab/auth/commit/d111b1ebaca5f3599f8477a5c61e15db60d86238)
 - [2024-10-18] [assert getSession has user or redirect to unauth url](https://github.com/RubricLab/auth/commit/939bc637013933cbbcb03f00753ebcbe500759bd)
