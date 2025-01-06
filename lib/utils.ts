@@ -63,7 +63,7 @@ export function createAuthActions({
 			})
 		},
 
-		async getSession({ protectedRoute = true }: { protectedRoute?: boolean } = {}) {
+		async getSession() {
 			const user = JSON.parse((await cookies()).get('user')?.value || '{}')
 
 			const sessionKey = (await cookies()).get('key')?.value
@@ -73,7 +73,7 @@ export function createAuthActions({
 				user
 			})
 
-			if (!success && protectedRoute) {
+			if (!success) {
 				redirect(unauthorizedUrl)
 			}
 
