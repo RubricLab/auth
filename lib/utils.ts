@@ -1,5 +1,5 @@
 import type { Prisma } from '@prisma/client'
-import { cookies, headers } from 'next/headers'
+import { cookies } from 'next/headers'
 import { redirect } from 'next/navigation'
 import { type AuthProviders, type Session, zodSession, zodUser } from './types'
 
@@ -67,11 +67,6 @@ export function createAuthActions({
 		> {
 			const user = JSON.parse((await cookies()).get('user')?.value || '{}')
 
-			const headersList = await headers()
-			const referer = headersList?.get('referer') || ''
-			const url = new URL(referer)
-			const searchParams = new URLSearchParams(url?.search || '')
-
 			const sessionKey = (await cookies()).get('key')?.value
 
 			const { data, success } = zodSession.safeParse({
@@ -80,7 +75,7 @@ export function createAuthActions({
 			})
 
 			if (!success && redirectUnauthorizedUsers) {
-				redirect(`${unauthorizedUrl}?${searchParams.toString()}`)
+				redirect(unauthorizedUrl)
 			}
 
 			return data as T extends true ? Session : Session | undefined
