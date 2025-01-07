@@ -1,3 +1,4 @@
+- [2025-01-06] [allow undefined session](https://github.com/RubricLab/auth/commit/1d26dd061e5cf6de179bfa6c011ae6a93cc6fe85)
 - [2025-01-06] [better optional session handling with generics on useSession](https://github.com/RubricLab/auth/commit/1ed0a1bd20381b20afd6555970bbcadfbaa71aba)
 - [2025-01-06] [allow for non redirect on getSession](https://github.com/RubricLab/auth/commit/a28c539875fd0e6a84717bd73a76b8b891246f57)
 - [2025-01-06] [Undo breaking change](https://github.com/RubricLab/auth/commit/7f85ee885e6b66a2eecb84da32b36a5f4ea02160)
