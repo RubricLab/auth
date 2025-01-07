@@ -1,6 +1,6 @@
 import type { Prisma } from '@prisma/client'
 
-import { type AuthProviders, zodSession, zodUser } from './types'
+import { type AuthProviders, type Session, zodSession, zodUser } from './types'
 
 import { redirect } from 'next/navigation'
 
@@ -63,9 +63,11 @@ export function createAuthActions({
 			})
 		},
 
-		async getSession({
-			redirectUnauthorizedUsers = true
-		}: { redirectUnauthorizedUsers?: boolean } = {}) {
+		async getSession<T extends boolean = true>({
+			redirectUnauthorizedUsers = true as T
+		}: { redirectUnauthorizedUsers?: T } = {}): Promise<
+			T extends true ? Session : Session | undefined
+		> {
 			const user = JSON.parse((await cookies()).get('user')?.value || '{}')
 
 			const sessionKey = (await cookies()).get('key')?.value
@@ -79,7 +81,7 @@ export function createAuthActions({
 				redirect(unauthorizedUrl)
 			}
 
-			return data
+			return data as T extends true ? Session : Session | undefined
 		},
 		async getUser(userId: string) {
 			const user = await db.user.findUnique({

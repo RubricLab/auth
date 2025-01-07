@@ -8,7 +8,7 @@ const AuthContext = createContext<Session | undefined>(undefined)
 export const ClientAuthProvider = ({
 	session,
 	children
-}: { session: Session; children: ReactNode }) => {
+}: { session?: Session; children: ReactNode }) => {
 	return <AuthContext.Provider value={session}>{children}</AuthContext.Provider>
 }
 
