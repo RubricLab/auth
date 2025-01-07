@@ -63,7 +63,9 @@ export function createAuthActions({
 			})
 		},
 
-		async getSession() {
+		async getSession({
+			redirectUnauthorizedUsers = true
+		}: { redirectUnauthorizedUsers?: boolean } = {}) {
 			const user = JSON.parse((await cookies()).get('user')?.value || '{}')
 
 			const sessionKey = (await cookies()).get('key')?.value
@@ -73,7 +75,7 @@ export function createAuthActions({
 				user
 			})
 
-			if (!success) {
+			if (!success && redirectUnauthorizedUsers) {
 				redirect(unauthorizedUrl)
 			}
 

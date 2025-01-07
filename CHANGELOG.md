@@ -1,3 +1,4 @@
+- [2025-01-06] [allow for non redirect on getSession](https://github.com/RubricLab/auth/commit/a28c539875fd0e6a84717bd73a76b8b891246f57)
 - [2025-01-06] [Undo breaking change](https://github.com/RubricLab/auth/commit/7f85ee885e6b66a2eecb84da32b36a5f4ea02160)
 - [2025-01-06] [Add protectRoute arg to getSession](https://github.com/RubricLab/auth/commit/76aa6c4df2d26fba87df6a89327991fcef06afb7)
 - [2024-10-31] [next auth 15 support awaited cookies](https://github.com/RubricLab/auth/commit/8444c6e86d48c4ab7b180e2001ad1fd713a6684d)
