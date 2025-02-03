@@ -1,3 +1,4 @@
+- [2025-02-03] [rebuild](https://github.com/RubricLab/auth/commit/3fa5db5c4716a9db6cc1361702c820ceda832cfb)
 - [2025-01-07] [Undo change](https://github.com/RubricLab/auth/commit/2315b51d3bf472421d565ee80a2b7a14c5852343)
 - [2025-01-07] [Pass searchParams through to redirect page](https://github.com/RubricLab/auth/commit/daefdcf4ad98ecc0a66b73c81992e72512faeacb)
 - [2025-01-06] [allow undefined session](https://github.com/RubricLab/auth/commit/1d26dd061e5cf6de179bfa6c011ae6a93cc6fe85)

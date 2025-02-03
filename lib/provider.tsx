@@ -1,21 +1,24 @@
 'use client'
 
 import React, { createContext, useContext, type ReactNode } from 'react'
-import type { Session } from './types'
+import type { DatabaseProvider } from './types'
 
-const AuthContext = createContext<Session | undefined>(undefined)
+const AuthContext = createContext<Awaited<ReturnType<DatabaseProvider['getSession']>>>(null)
 
-export const ClientAuthProvider = ({
+export function ClientAuthProvider({
 	session,
 	children
-}: { session: Session | undefined; children: ReactNode }) => {
+}: {
+	session: Awaited<ReturnType<DatabaseProvider['getSession']>>
+	children: ReactNode
+}) {
 	return <AuthContext.Provider value={session}>{children}</AuthContext.Provider>
 }
 
-export const useSession = () => {
+export function useSession() {
 	const context = useContext(AuthContext)
 	if (context === undefined) {
-		throw new Error('useAuth must be used within an AuthProvider')
+		throw new Error('useSession must be used within a ClientAuthProvider')
 	}
 	return context
 }

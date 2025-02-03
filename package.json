@@ -10,11 +10,20 @@
     "lint:fix": "bun x biome check --fix --unsafe . && bun x biome lint --write --unsafe ."
   },
   "name": "@rubriclab/auth",
-  "version": "0.0.17",
-  "main": "index.ts",
+  "version": "0.0.18",
+  "main": "lib/index.ts",
+  "exports": {
+    ".": "./lib/index.ts",
+    "./providers": "./lib/providers/google.ts"
+  },
   "dependencies": {
+    "@rubriclab/config": "*",
     "@rubriclab/package": "*",
-    "@rubriclab/config": "*"
+    "react": "^19.0.0",
+    "resend": "^4.1.1"
+  },
+  "peerDependencies": {
+    "next": "^15.1.6"
   },
   "simple-git-hooks": {
     "post-commit": "bun run rubriclab-postcommit"

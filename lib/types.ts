@@ -1,62 +1,110 @@
-import type { PrismaClient } from '@prisma/client'
-import { z } from 'zod'
+// export type AuthUrl = `http${'s' | ''}://${string}${'.' | ':'}${string}`
 
-export const zodUser = z.object({
-	id: z.string(),
-	authProviders: z.array(z.object({ provider: z.string(), accountId: z.string() }))
-})
-
-export const zodSession = z.object({
-	sessionKey: z.string(),
-	user: zodUser
-})
-
-export type Session = z.infer<typeof zodSession>
-
-export interface UserInfo {
-	accountId: string
-	label: string
-}
-
-export interface AuthProviderConfig {
-	provider: string
-	scopes: string[]
-	clientId: string
-	clientSecret: string
-}
-
-export interface AuthTokens {
-	accessToken: string
-	refreshToken: string | null
-	expiresAt: number | null
-}
-
-export interface AuthProvider {
-	config: AuthProviderConfig
-	getAuthUrl: ({ userId }: { userId: string }) => string
-	getTokensFromCode({ code }: { code: string }): Promise<AuthTokens>
-	getAccessToken({
-		userId,
-		accountId
-	}: {
-		userId: string
+export type AuthUrl = string
+export type Oauth2AuthenticationProvider = {
+	method: 'oauth2'
+	getAuthenticationUrl: (options: { redirectUri: string }) => Promise<URL>
+	getToken: (options: { code: string; redirectUri: string }) => Promise<{
+		accessToken: string
+		refreshToken: string
+		expiresAt: Date
+	}>
+	getUser: (options: { accessToken: string }) => Promise<{
 		accountId: string
-	}): Promise<{ accessToken: string }>
-	getUserInfo({ token }: { token: string }): Promise<UserInfo>
+		email: string
+	}>
 }
 
-export type AuthProviders = {
-	[provider in string]?: AuthProvider
+export type Oauth2AuthorizationProvider = {
+	method: 'oauth2'
+	getAuthorizationUrl: (options: { userId: string; redirectUri: string }) => Promise<URL>
+	getToken: (options: { code: string; redirectUri: string }) => Promise<{
+		accessToken: string
+		refreshToken: string
+		expiresAt: Date
+	}>
+	getUser: (options: { accessToken: string }) => Promise<{
+		accountId: string
+		email: string
+	}>
 }
 
-export interface User {
-	id: string
+export type MagicLinkAuthenticationProvider = {
+	method: 'magiclink'
+	sendEmail: (options: { email: string; url: string }) => Promise<void>
 }
 
-export interface WebhookInfo {
-	id: string
-	type: string
-	enabled: boolean
-}
+export type AuthenticationProvider = Oauth2AuthenticationProvider | MagicLinkAuthenticationProvider
+export type AuthorizationProvider = Oauth2AuthorizationProvider
 
-export type DB = PrismaClient
+export type DatabaseProvider = {
+	createMagicLinkToken: (data: { email: string; expiresAt: Date }) => Promise<{
+		token: string
+		email: string
+		expiresAt: Date
+	}>
+	getSession: (data: { key: string }) => Promise<{
+		key: string
+		userId: string
+		expiresAt: Date
+		user: {
+			OAuth2AuthenticationAccounts: {
+				provider: string
+				accountId: string
+				accessToken: string
+				refreshToken: string
+				expiresAt: Date
+			}[]
+			OAuth2AuthorizationAccounts: {
+				provider: string
+				accountId: string
+				accessToken: string
+				refreshToken: string
+				expiresAt: Date
+			}[]
+		}
+	} | null>
+	createOAuth2AuthenticationAccount: (data: {
+		userId: string
+		provider: string
+		accountId: string
+		accessToken: string
+		refreshToken: string
+		expiresAt: Date
+	}) => Promise<{
+		userId: string
+		provider: string
+		accountId: string
+		accessToken: string
+		refreshToken: string
+		expiresAt: Date
+	}>
+	createOAuth2AuthorizationAccount: (data: {
+		userId: string
+		provider: string
+		accountId: string
+		accessToken: string
+		refreshToken: string
+		expiresAt: Date
+	}) => Promise<{
+		userId: string
+		provider: string
+		accountId: string
+		accessToken: string
+		refreshToken: string
+		expiresAt: Date
+	}>
+	getUser: (data: { email: string }) => Promise<{
+		id: string
+		email: string
+	} | null>
+	createUser: (data: { email: string }) => Promise<{
+		id: string
+		email: string
+	}>
+	createSession: (data: { userId: string; expiresAt: Date }) => Promise<{
+		key: string
+		userId: string
+		expiresAt: Date
+	}>
+}
