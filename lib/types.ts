@@ -48,14 +48,14 @@ export type DatabaseProvider = {
 		userId: string
 		expiresAt: Date
 		user: {
-			OAuth2AuthenticationAccounts: {
+			oAuth2AuthenticationAccounts: {
 				provider: string
 				accountId: string
 				accessToken: string
 				refreshToken: string
 				expiresAt: Date
 			}[]
-			OAuth2AuthorizationAccounts: {
+			oAuth2AuthorizationAccounts: {
 				provider: string
 				accountId: string
 				accessToken: string

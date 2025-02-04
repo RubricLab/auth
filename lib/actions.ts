@@ -3,7 +3,7 @@ import { redirect } from 'next/navigation'
 import type {
 	AuthUrl,
 	AuthorizationProvider,
-	DatabaseProvider,
+	DatabaseProvider as GenericDatabaseProvider,
 	MagicLinkAuthenticationProvider,
 	Oauth2AuthenticationProvider
 } from './types'
@@ -11,7 +11,8 @@ import type {
 export function createAuthActions<
 	OAuth2AuthenticationProviders extends Record<string, Oauth2AuthenticationProvider>,
 	MagicLinkAuthenticationProviders extends Record<string, MagicLinkAuthenticationProvider>,
-	AuthorizationProviders extends Record<string, AuthorizationProvider>
+	AuthorizationProviders extends Record<string, AuthorizationProvider>,
+	DatabaseProvider extends GenericDatabaseProvider
 >({
 	oAuth2AuthenticationProviders,
 	magicLinkAuthenticationProviders,
@@ -38,6 +39,11 @@ export function createAuthActions<
 
 		const url = await oAuth2AuthenticationProviders[provider].getAuthenticationUrl({ redirectUri })
 		redirect(url.toString())
+	}
+
+	async function signOut() {
+		;(await cookies()).delete('session')
+		redirect('/')
 	}
 
 	async function sendMagicLink({
@@ -92,5 +98,5 @@ export function createAuthActions<
 		redirect(url.toString())
 	}
 
-	return { signIn, sendMagicLink, getSession, connect }
+	return { signIn, sendMagicLink, getSession, connect, signOut }
 }
