@@ -16,7 +16,7 @@ export function createOauth2AuthenticationProvider({
 	getUser,
 	refreshToken
 }: {
-	getAuthenticationUrl: (options: { redirectUri: string }) => Promise<URL>
+	getAuthenticationUrl: (options: { redirectUri: string; state: string }) => Promise<URL>
 	getToken: (options: { code: string; redirectUri: string }) => Promise<{
 		accessToken: string
 		refreshToken: string
@@ -47,7 +47,10 @@ export function createOauth2AuthorizationProvider({
 	getUser,
 	refreshToken
 }: {
-	getAuthorizationUrl: (options: { userId: string; redirectUri: string }) => Promise<URL>
+	getAuthorizationUrl: (options: {
+		redirectUri: string
+		state: string
+	}) => Promise<URL>
 	getToken: (options: { code: string; redirectUri: string }) => Promise<{
 		accessToken: string
 		refreshToken: string
@@ -243,6 +246,10 @@ export function createAuth<
 									accessToken
 								})
 
+								const { callbackUrl } = await databaseProvider.getOAuth2AuthenticationRequest({
+									token: state
+								})
+
 								let user = await databaseProvider.getUser({ email })
 
 								if (!user) {
@@ -259,7 +266,7 @@ export function createAuth<
 
 								const session = await databaseProvider.createSession({
 									userId: user.id,
-									expiresAt: new Date(Date.now() + 1000 * 60 * 60 * 24) // 1 day
+									expiresAt: new Date(Date.now() + 1000 * 60 * 60 * 24)
 								})
 
 								const cookies = await nextCookies()
@@ -269,8 +276,7 @@ export function createAuth<
 									httpOnly: true
 								})
 
-								redirect('/')
-								break
+								return redirect(callbackUrl)
 							}
 							case 'magiclink': {
 								return
@@ -298,8 +304,12 @@ export function createAuth<
 
 								const { accountId } = await authorizationProvider.getUser({ accessToken })
 
+								const { userId, callbackUrl } = await databaseProvider.getOAuth2AuthorizationRequest({
+									token: state
+								})
+
 								await databaseProvider.createOAuth2AuthorizationAccount({
-									userId: state,
+									userId,
 									provider: String(provider),
 									accountId,
 									accessToken,
@@ -307,8 +317,7 @@ export function createAuth<
 									expiresAt
 								})
 
-								redirect('/')
-								break
+								return redirect(callbackUrl)
 							}
 						}
 					}
@@ -317,17 +326,29 @@ export function createAuth<
 		},
 		actions: {
 			async signIn({
-				provider
+				provider,
+				callbackUrl
 			}: {
 				provider: keyof OAuth2AuthenticationProviders
+				callbackUrl: string
 			}) {
 				if (!oAuth2AuthenticationProviders || !oAuth2AuthenticationProviders[provider]) {
 					throw new Error(`OAuth2 provider ${String(provider)} not found`)
 				}
 
+				const state = crypto.randomUUID()
+				await databaseProvider.createOAuth2AuthenticationRequest({
+					token: state,
+					callbackUrl,
+					expiresAt: new Date(Date.now() + 1000 * 60 * 60 * 24)
+				})
+
 				const redirectUri = `${authUrl}/auth/authentication/${String(provider)}`
 
-				const url = await oAuth2AuthenticationProviders[provider].getAuthenticationUrl({ redirectUri })
+				const url = await oAuth2AuthenticationProviders[provider].getAuthenticationUrl({
+					redirectUri,
+					state
+				})
 				redirect(url.toString())
 			},
 
@@ -348,7 +369,8 @@ export function createAuth<
 					throw new Error(`MagicLink provider ${String(provider)} not found`)
 				}
 
-				const { token } = await databaseProvider.createMagicLinkToken({
+				const { token } = await databaseProvider.createMagicLinkRequest({
+					token: crypto.randomUUID(),
 					email,
 					expiresAt: new Date(Date.now() + 1000 * 60 * 60 * 24)
 				})
@@ -452,18 +474,32 @@ export function createAuth<
 
 			async connect({
 				provider,
+				callbackUrl,
 				userId
 			}: {
 				provider: keyof AuthorizationProviders
+				callbackUrl: string
 				userId: string
 			}) {
 				if (!authorizationProviders || !authorizationProviders[provider]) {
 					throw new Error(`Authorization provider ${String(provider)} not found`)
 				}
 
+				const state = crypto.randomUUID()
+
+				await databaseProvider.createOAuth2AuthorizationRequest({
+					token: state,
+					userId,
+					callbackUrl,
+					expiresAt: new Date(Date.now() + 1000 * 60 * 60 * 24)
+				})
+
 				const redirectUri = `${authUrl}/auth/authorization/${String(provider)}`
 
-				const url = await authorizationProviders[provider].getAuthorizationUrl({ userId, redirectUri })
+				const url = await authorizationProviders[provider].getAuthorizationUrl({
+					redirectUri,
+					state
+				})
 				redirect(url.toString())
 			},
 			async disconnect({

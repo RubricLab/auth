@@ -8,7 +8,7 @@ export const createGoogleAuthenticationProvider = ({
 	googleClientSecret: string
 }) =>
 	createOauth2AuthenticationProvider({
-		getAuthenticationUrl: async ({ redirectUri }) => {
+		getAuthenticationUrl: async ({ redirectUri, state }) => {
 			const url = new URL('https://accounts.google.com/o/oauth2/v2/auth')
 
 			url.searchParams.set('client_id', googleClientId)
@@ -18,7 +18,7 @@ export const createGoogleAuthenticationProvider = ({
 				'scope',
 				'https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/userinfo.profile'
 			)
-			url.searchParams.set('state', 'state')
+			url.searchParams.set('state', state)
 			url.searchParams.set('access_type', 'offline')
 			url.searchParams.set('prompt', 'select_account')
 
@@ -103,14 +103,14 @@ export const createGoogleAuthorizationProvider = ({
 	scopes: string[]
 }) =>
 	createOauth2AuthorizationProvider({
-		getAuthorizationUrl: async ({ userId, redirectUri }) => {
+		getAuthorizationUrl: async ({ redirectUri, state }) => {
 			const url = new URL('https://accounts.google.com/o/oauth2/v2/auth')
 
 			url.searchParams.set('client_id', googleClientId)
 			url.searchParams.set('redirect_uri', redirectUri)
 			url.searchParams.set('response_type', 'code')
 			url.searchParams.set('scope', scopes.join(' '))
-			url.searchParams.set('state', userId)
+			url.searchParams.set('state', state)
 			url.searchParams.set('access_type', 'offline')
 			url.searchParams.set('prompt', 'consent')
 

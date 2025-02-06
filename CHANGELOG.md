@@ -1,3 +1,4 @@
+- [2025-02-06] [callback url, state security](https://github.com/RubricLab/auth/commit/31b2a52abc65bae6a2dbc34bb5d83ecc09238a72)
 - [2025-02-06] [slightly safer action returns](https://github.com/RubricLab/auth/commit/057e0c6380e2143d75bcd961c3af0692a736637b)
 - [2025-02-06] [refresh tokens](https://github.com/RubricLab/auth/commit/9c1c10d37c20a317e5373d50a54676ed68fe78ac)
 - [2025-02-05] [cleanup](https://github.com/RubricLab/auth/commit/f0f9040394c6754525d1a5dbd68e3452853d5ef0)

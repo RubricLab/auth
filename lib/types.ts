@@ -3,7 +3,7 @@
 export type AuthUrl = string
 export type Oauth2AuthenticationProvider = {
 	method: 'oauth2'
-	getAuthenticationUrl: (options: { redirectUri: string }) => Promise<URL>
+	getAuthenticationUrl: (options: { redirectUri: string; state: string }) => Promise<URL>
 	getToken: (options: { code: string; redirectUri: string }) => Promise<{
 		accessToken: string
 		refreshToken: string
@@ -22,7 +22,10 @@ export type Oauth2AuthenticationProvider = {
 
 export type Oauth2AuthorizationProvider = {
 	method: 'oauth2'
-	getAuthorizationUrl: (options: { userId: string; redirectUri: string }) => Promise<URL>
+	getAuthorizationUrl: (options: {
+		redirectUri: string
+		state: string
+	}) => Promise<URL>
 	getToken: (options: { code: string; redirectUri: string }) => Promise<{
 		accessToken: string
 		refreshToken: string
@@ -48,7 +51,38 @@ export type AuthenticationProvider = Oauth2AuthenticationProvider | MagicLinkAut
 export type AuthorizationProvider = Oauth2AuthorizationProvider
 
 export type DatabaseProvider = {
-	createMagicLinkToken: (data: { email: string; expiresAt: Date }) => Promise<{
+	createOAuth2AuthenticationRequest: (data: {
+		token: string
+		callbackUrl: string
+		expiresAt: Date
+	}) => Promise<{
+		token: string
+		callbackUrl: string
+		expiresAt: Date
+	}>
+	createOAuth2AuthorizationRequest: (data: {
+		token: string
+		userId: string
+		callbackUrl: string
+		expiresAt: Date
+	}) => Promise<{
+		token: string
+		userId: string
+		callbackUrl: string
+		expiresAt: Date
+	}>
+	getOAuth2AuthenticationRequest: (data: { token: string }) => Promise<{
+		token: string
+		callbackUrl: string
+		expiresAt: Date
+	}>
+	getOAuth2AuthorizationRequest: (data: { token: string }) => Promise<{
+		token: string
+		userId: string
+		callbackUrl: string
+		expiresAt: Date
+	}>
+	createMagicLinkRequest: (data: { token: string; email: string; expiresAt: Date }) => Promise<{
 		token: string
 		email: string
 		expiresAt: Date
