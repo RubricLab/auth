@@ -246,9 +246,14 @@ export function createAuth<
 									accessToken
 								})
 
-								const { callbackUrl } = await databaseProvider.getOAuth2AuthenticationRequest({
-									token: state
-								})
+								const { callbackUrl, expiresAt: requestExpiresAt } =
+									await databaseProvider.getOAuth2AuthenticationRequest({
+										token: state
+									})
+
+								if (requestExpiresAt < new Date()) {
+									throw new Error('Request expired')
+								}
 
 								let user = await databaseProvider.getUser({ email })
 
@@ -304,9 +309,17 @@ export function createAuth<
 
 								const { accountId } = await authorizationProvider.getUser({ accessToken })
 
-								const { userId, callbackUrl } = await databaseProvider.getOAuth2AuthorizationRequest({
+								const {
+									userId,
+									callbackUrl,
+									expiresAt: requestExpiresAt
+								} = await databaseProvider.getOAuth2AuthorizationRequest({
 									token: state
 								})
+
+								if (requestExpiresAt < new Date()) {
+									throw new Error('Request expired')
+								}
 
 								await databaseProvider.createOAuth2AuthorizationAccount({
 									userId,
@@ -423,6 +436,11 @@ export function createAuth<
 
 				const session = await databaseProvider.getSession({ key: sessionCookie.value })
 				if (!session) return null
+
+				if (session.expiresAt < new Date()) {
+					cookies.delete('session')
+					return null
+				}
 
 				const refreshedOauth2AuthenticationAccounts = await Promise.all(
 					session.user.oAuth2AuthenticationAccounts.map(async account => {
