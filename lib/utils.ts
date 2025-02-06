@@ -361,8 +361,36 @@ export function createAuth<
 				return
 			},
 
-			refreshOauth2AuthenticationToken,
-			refreshOauth2AuthorizationToken,
+			async refreshOauth2AuthenticationToken({
+				provider,
+				accountId,
+				userId
+			}: {
+				provider: keyof OAuth2AuthenticationProviders
+				accountId: string
+				userId: string
+			}) {
+				await refreshOauth2AuthenticationToken({
+					provider,
+					accountId,
+					userId
+				})
+			},
+			async refreshOauth2AuthorizationToken({
+				provider,
+				accountId,
+				userId
+			}: {
+				provider: keyof AuthorizationProviders
+				accountId: string
+				userId: string
+			}) {
+				await refreshOauth2AuthorizationToken({
+					provider,
+					accountId,
+					userId
+				})
+			},
 
 			async getSession() {
 				const cookies = await nextCookies()
@@ -410,8 +438,14 @@ export function createAuth<
 					...session,
 					user: {
 						...session.user,
-						oAuth2AuthenticationAccounts: refreshedOauth2AuthenticationAccounts,
-						oAuth2AuthorizationAccounts: refreshedOauth2AuthorizationAccounts
+						oAuth2AuthenticationAccounts: refreshedOauth2AuthenticationAccounts.map(account => ({
+							provider: account.provider,
+							accountId: account.accountId
+						})),
+						oAuth2AuthorizationAccounts: refreshedOauth2AuthorizationAccounts.map(account => ({
+							provider: account.provider,
+							accountId: account.accountId
+						}))
 					}
 				} as Awaited<ReturnType<DatabaseProvider['getSession']>>
 			},

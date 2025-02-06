@@ -87,7 +87,7 @@ export const createGoogleAuthenticationProvider = ({
 
 			return {
 				accessToken: data.access_token,
-				refreshToken: data.refresh_token, // Google may or may not provide a new refresh token
+				refreshToken: data.refresh_token,
 				expiresAt: new Date(Date.now() + data.expires_in * 1000)
 			}
 		}
@@ -169,7 +169,6 @@ export const createGoogleAuthorizationProvider = ({
 					grant_type: 'refresh_token'
 				}).toString()
 			})
-			console.log('refreshToken', refreshToken)
 
 			const data = await response.json()
 
@@ -180,7 +179,7 @@ export const createGoogleAuthorizationProvider = ({
 
 			return {
 				accessToken: data.access_token,
-				refreshToken: data.refresh_token, // Google may or may not provide a new refresh token
+				refreshToken: data.refresh_token,
 				expiresAt: new Date(Date.now() + data.expires_in * 1000)
 			}
 		}
