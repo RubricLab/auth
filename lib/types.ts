@@ -13,6 +13,11 @@ export type Oauth2AuthenticationProvider = {
 		accountId: string
 		email: string
 	}>
+	refreshToken: (options: { refreshToken: string }) => Promise<{
+		accessToken: string
+		refreshToken?: string
+		expiresAt: Date
+	}>
 }
 
 export type Oauth2AuthorizationProvider = {
@@ -26,6 +31,11 @@ export type Oauth2AuthorizationProvider = {
 	getUser: (options: { accessToken: string }) => Promise<{
 		accountId: string
 		email: string
+	}>
+	refreshToken: (options: { refreshToken: string }) => Promise<{
+		accessToken: string
+		refreshToken?: string
+		expiresAt: Date
 	}>
 }
 
@@ -64,6 +74,18 @@ export type DatabaseProvider = {
 			}[]
 		}
 	} | null>
+	getOAuth2AuthenticationAccount: (data: {
+		provider: string
+		accountId: string
+		userId: string
+	}) => Promise<{
+		userId: string
+		provider: string
+		accountId: string
+		accessToken: string
+		refreshToken: string
+		expiresAt: Date
+	}>
 	createOAuth2AuthenticationAccount: (data: {
 		userId: string
 		provider: string
@@ -79,7 +101,61 @@ export type DatabaseProvider = {
 		refreshToken: string
 		expiresAt: Date
 	}>
+	updateOAuth2AuthenticationAccount: (data: {
+		userId: string
+		provider: string
+		accountId: string
+		accessToken: string
+		refreshToken: string
+		expiresAt: Date
+	}) => Promise<{
+		userId: string
+		provider: string
+		accountId: string
+		accessToken: string
+		refreshToken: string
+		expiresAt: Date
+	}>
+	getOAuth2AuthorizationAccount: (data: {
+		provider: string
+		accountId: string
+		userId: string
+	}) => Promise<{
+		userId: string
+		provider: string
+		accountId: string
+		accessToken: string
+		refreshToken: string
+		expiresAt: Date
+	}>
 	createOAuth2AuthorizationAccount: (data: {
+		userId: string
+		provider: string
+		accountId: string
+		accessToken: string
+		refreshToken: string
+		expiresAt: Date
+	}) => Promise<{
+		userId: string
+		provider: string
+		accountId: string
+		accessToken: string
+		refreshToken: string
+		expiresAt: Date
+	}>
+	deleteOAuth2AuthorizationAccount: (data: {
+		provider: string
+		accountId: string
+		userId: string
+	}) => Promise<{
+		userId: string
+		provider: string
+		accountId: string
+		accessToken: string
+		refreshToken: string
+		expiresAt: Date
+	}>
+	updateOAuth2AuthorizationAccount: (data: {
 		userId: string
 		provider: string
 		accountId: string

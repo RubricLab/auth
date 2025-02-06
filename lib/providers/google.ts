@@ -20,7 +20,7 @@ export const createGoogleAuthenticationProvider = ({
 			)
 			url.searchParams.set('state', 'state')
 			url.searchParams.set('access_type', 'offline')
-			url.searchParams.set('prompt', 'consent')
+			url.searchParams.set('prompt', 'select_account')
 
 			return url
 		},
@@ -62,6 +62,33 @@ export const createGoogleAuthenticationProvider = ({
 			return {
 				accountId: data.id,
 				email: data.email
+			}
+		},
+		refreshToken: async ({ refreshToken }) => {
+			const response = await fetch('https://oauth2.googleapis.com/token', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/x-www-form-urlencoded'
+				},
+				body: new URLSearchParams({
+					client_id: googleClientId,
+					client_secret: googleClientSecret,
+					refresh_token: refreshToken,
+					grant_type: 'refresh_token'
+				}).toString()
+			})
+
+			const data = await response.json()
+
+			if (!response.ok) {
+				console.error('Token refresh failed:', data)
+				throw new Error(`Failed to refresh token: ${data.error}`)
+			}
+
+			return {
+				accessToken: data.access_token,
+				refreshToken: data.refresh_token, // Google may or may not provide a new refresh token
+				expiresAt: new Date(Date.now() + data.expires_in * 1000)
 			}
 		}
 	})
@@ -127,6 +154,34 @@ export const createGoogleAuthorizationProvider = ({
 			return {
 				accountId: data.id,
 				email: data.email
+			}
+		},
+		refreshToken: async ({ refreshToken }) => {
+			const response = await fetch('https://oauth2.googleapis.com/token', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/x-www-form-urlencoded'
+				},
+				body: new URLSearchParams({
+					client_id: googleClientId,
+					client_secret: googleClientSecret,
+					refresh_token: refreshToken,
+					grant_type: 'refresh_token'
+				}).toString()
+			})
+			console.log('refreshToken', refreshToken)
+
+			const data = await response.json()
+
+			if (!response.ok) {
+				console.error('Token refresh failed:', data)
+				throw new Error(`Failed to refresh token: ${data.error}`)
+			}
+
+			return {
+				accessToken: data.access_token,
+				refreshToken: data.refresh_token, // Google may or may not provide a new refresh token
+				expiresAt: new Date(Date.now() + data.expires_in * 1000)
 			}
 		}
 	})

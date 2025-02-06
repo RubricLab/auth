@@ -1,3 +1,4 @@
+- [2025-02-06] [refresh tokens](https://github.com/RubricLab/auth/commit/9c1c10d37c20a317e5373d50a54676ed68fe78ac)
 - [2025-02-05] [cleanup](https://github.com/RubricLab/auth/commit/f0f9040394c6754525d1a5dbd68e3452853d5ef0)
 - [2025-02-04] [exports and session generics](https://github.com/RubricLab/auth/commit/0758e8d3c3d0d31006c424316688d9a950b9f936)
 - [2025-02-03] [rebuild](https://github.com/RubricLab/auth/commit/3fa5db5c4716a9db6cc1361702c820ceda832cfb)

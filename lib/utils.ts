@@ -13,7 +13,8 @@ import type {
 export function createOauth2AuthenticationProvider({
 	getAuthenticationUrl,
 	getToken,
-	getUser
+	getUser,
+	refreshToken
 }: {
 	getAuthenticationUrl: (options: { redirectUri: string }) => Promise<URL>
 	getToken: (options: { code: string; redirectUri: string }) => Promise<{
@@ -25,19 +26,26 @@ export function createOauth2AuthenticationProvider({
 		accountId: string
 		email: string
 	}>
+	refreshToken: (options: { refreshToken: string }) => Promise<{
+		accessToken: string
+		refreshToken?: string
+		expiresAt: Date
+	}>
 }): Oauth2AuthenticationProvider {
 	return {
 		method: 'oauth2',
 		getAuthenticationUrl,
 		getToken,
-		getUser
+		getUser,
+		refreshToken
 	}
 }
 
 export function createOauth2AuthorizationProvider({
 	getAuthorizationUrl,
 	getToken,
-	getUser
+	getUser,
+	refreshToken
 }: {
 	getAuthorizationUrl: (options: { userId: string; redirectUri: string }) => Promise<URL>
 	getToken: (options: { code: string; redirectUri: string }) => Promise<{
@@ -49,12 +57,18 @@ export function createOauth2AuthorizationProvider({
 		accountId: string
 		email: string
 	}>
+	refreshToken: (options: { refreshToken: string }) => Promise<{
+		accessToken: string
+		refreshToken?: string
+		expiresAt: Date
+	}>
 }): Oauth2AuthorizationProvider {
 	return {
 		method: 'oauth2',
 		getAuthorizationUrl,
 		getToken,
-		getUser
+		getUser,
+		refreshToken
 	}
 }
 
@@ -87,6 +101,89 @@ export function createAuth<
 	databaseProvider: DatabaseProvider
 	authUrl: AuthUrl
 }) {
+	async function refreshOauth2AuthenticationToken({
+		provider,
+		accountId,
+		userId
+	}: {
+		provider: keyof OAuth2AuthenticationProviders
+		accountId: string
+		userId: string
+	}) {
+		const account = await databaseProvider.getOAuth2AuthenticationAccount({
+			provider: String(provider),
+			accountId,
+			userId
+		})
+
+		let authenticationProvider: Oauth2AuthenticationProvider | undefined
+
+		if (oAuth2AuthenticationProviders && provider in oAuth2AuthenticationProviders) {
+			authenticationProvider =
+				oAuth2AuthenticationProviders[provider as keyof OAuth2AuthenticationProviders]
+		}
+
+		if (!authenticationProvider) {
+			throw new Error(`Authentication provider ${String(provider)} not found`)
+		}
+
+		const {
+			accessToken,
+			refreshToken: newRefreshToken,
+			expiresAt
+		} = await authenticationProvider.refreshToken({
+			refreshToken: account.refreshToken
+		})
+
+		return await databaseProvider.updateOAuth2AuthenticationAccount({
+			userId: account.userId,
+			provider: account.provider,
+			accountId: account.accountId,
+			accessToken,
+			refreshToken: newRefreshToken || account.refreshToken,
+			expiresAt
+		})
+	}
+
+	async function refreshOauth2AuthorizationToken({
+		provider,
+		accountId,
+		userId
+	}: {
+		provider: keyof AuthorizationProviders
+		accountId: string
+		userId: string
+	}) {
+		const account = await databaseProvider.getOAuth2AuthorizationAccount({
+			provider: String(provider),
+			accountId,
+			userId
+		})
+
+		let authorizationProvider: Oauth2AuthorizationProvider | undefined
+
+		if (authorizationProviders && provider in authorizationProviders) {
+			authorizationProvider = authorizationProviders[provider as keyof AuthorizationProviders]
+		}
+
+		if (!authorizationProvider) {
+			throw new Error(`Authorization provider ${String(provider)} not found`)
+		}
+
+		const { accessToken, refreshToken, expiresAt } = await authorizationProvider.refreshToken({
+			refreshToken: account.refreshToken
+		})
+
+		return await databaseProvider.updateOAuth2AuthorizationAccount({
+			userId: account.userId,
+			provider: account.provider,
+			accountId: account.accountId,
+			accessToken,
+			refreshToken: refreshToken || account.refreshToken,
+			expiresAt
+		})
+	}
+
 	return {
 		routes: {
 			async GET(
@@ -264,6 +361,9 @@ export function createAuth<
 				return
 			},
 
+			refreshOauth2AuthenticationToken,
+			refreshOauth2AuthorizationToken,
+
 			async getSession() {
 				const cookies = await nextCookies()
 				const sessionCookie = cookies.get('session')
@@ -272,8 +372,48 @@ export function createAuth<
 				}
 
 				const session = await databaseProvider.getSession({ key: sessionCookie.value })
+				if (!session) return null
 
-				return session as Awaited<ReturnType<DatabaseProvider['getSession']>>
+				const refreshedOauth2AuthenticationAccounts = await Promise.all(
+					session.user.oAuth2AuthenticationAccounts.map(async account => {
+						if (account.expiresAt < new Date()) {
+							const refreshedAccount = await refreshOauth2AuthenticationToken({
+								provider: account.provider,
+								accountId: account.accountId,
+								userId: session.userId
+							})
+
+							return refreshedAccount
+						}
+
+						return account
+					})
+				)
+
+				const refreshedOauth2AuthorizationAccounts = await Promise.all(
+					session.user.oAuth2AuthorizationAccounts.map(async account => {
+						if (account.expiresAt < new Date()) {
+							const refreshedAccount = await refreshOauth2AuthorizationToken({
+								provider: account.provider,
+								accountId: account.accountId,
+								userId: session.userId
+							})
+
+							return refreshedAccount
+						}
+
+						return account
+					})
+				)
+
+				return {
+					...session,
+					user: {
+						...session.user,
+						oAuth2AuthenticationAccounts: refreshedOauth2AuthenticationAccounts,
+						oAuth2AuthorizationAccounts: refreshedOauth2AuthorizationAccounts
+					}
+				} as Awaited<ReturnType<DatabaseProvider['getSession']>>
 			},
 
 			async connect({
@@ -291,6 +431,25 @@ export function createAuth<
 
 				const url = await authorizationProviders[provider].getAuthorizationUrl({ userId, redirectUri })
 				redirect(url.toString())
+			},
+			async disconnect({
+				provider,
+				accountId,
+				userId
+			}: {
+				provider: keyof AuthorizationProviders
+				accountId: string
+				userId: string
+			}) {
+				if (!authorizationProviders || !authorizationProviders[provider]) {
+					throw new Error(`Authorization provider ${String(provider)} not found`)
+				}
+
+				await databaseProvider.deleteOAuth2AuthorizationAccount({
+					provider: String(provider),
+					accountId,
+					userId
+				})
 			}
 		}
 	}
