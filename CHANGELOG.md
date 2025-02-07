@@ -1,3 +1,4 @@
+- [2025-02-07] [expire sessions after 30 days](https://github.com/RubricLab/auth/commit/bcb4a8bf8a3601afffb2ad1ecef21061850e24db)
 - [2025-02-07] [prisma adapter, type exports](https://github.com/RubricLab/auth/commit/ea24d4a2a5f7ec464eba3da5c2be96c9e2bf09af)
 - [2025-02-06] [expire stale auth requests](https://github.com/RubricLab/auth/commit/117d98f5f01aa195f3a29edd8c238fbc61782a90)
 - [2025-02-06] [callback url, state security](https://github.com/RubricLab/auth/commit/31b2a52abc65bae6a2dbc34bb5d83ecc09238a72)

@@ -272,7 +272,7 @@ export function createAuth<
 
 								const session = await databaseProvider.createSession({
 									userId: user.id,
-									expiresAt: new Date(Date.now() + 1000 * 60 * 60 * 24)
+									expiresAt: new Date(Date.now() + 1000 * 60 * 60 * 24 * 30)
 								})
 
 								const cookies = await nextCookies()
