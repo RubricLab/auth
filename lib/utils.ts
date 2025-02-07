@@ -89,18 +89,18 @@ export function createMagicLinkAuthenticationProvider({
 export function createAuth<
 	OAuth2AuthenticationProviders extends Record<string, Oauth2AuthenticationProvider>,
 	MagicLinkAuthenticationProviders extends Record<string, MagicLinkAuthenticationProvider>,
-	AuthorizationProviders extends Record<string, AuthorizationProvider>,
+	OAuth2AuthorizationProviders extends Record<string, Oauth2AuthorizationProvider>,
 	DatabaseProvider extends GenericDatabaseProvider
 >({
 	oAuth2AuthenticationProviders,
 	magicLinkAuthenticationProviders,
-	authorizationProviders,
+	oAuth2AuthorizationProviders,
 	databaseProvider,
 	authUrl
 }: {
 	oAuth2AuthenticationProviders?: OAuth2AuthenticationProviders
 	magicLinkAuthenticationProviders?: MagicLinkAuthenticationProviders
-	authorizationProviders?: AuthorizationProviders
+	oAuth2AuthorizationProviders?: OAuth2AuthorizationProviders
 	databaseProvider: DatabaseProvider
 	authUrl: AuthUrl
 }) {
@@ -153,7 +153,7 @@ export function createAuth<
 		accountId,
 		userId
 	}: {
-		provider: keyof AuthorizationProviders
+		provider: keyof OAuth2AuthorizationProviders
 		accountId: string
 		userId: string
 	}) {
@@ -165,8 +165,9 @@ export function createAuth<
 
 		let authorizationProvider: Oauth2AuthorizationProvider | undefined
 
-		if (authorizationProviders && provider in authorizationProviders) {
-			authorizationProvider = authorizationProviders[provider as keyof AuthorizationProviders]
+		if (oAuth2AuthorizationProviders && provider in oAuth2AuthorizationProviders) {
+			authorizationProvider =
+				oAuth2AuthorizationProviders[provider as keyof OAuth2AuthorizationProviders]
 		}
 
 		if (!authorizationProvider) {
@@ -199,7 +200,7 @@ export function createAuth<
 							method: 'authentication' | 'authorization',
 							provider:
 								| keyof OAuth2AuthenticationProviders
-								| keyof AuthorizationProviders
+								| keyof OAuth2AuthorizationProviders
 								| keyof MagicLinkAuthenticationProviders
 						]
 					}>
@@ -292,8 +293,9 @@ export function createAuth<
 					case 'authorization': {
 						let authorizationProvider: AuthorizationProvider | undefined
 
-						if (authorizationProviders && provider in authorizationProviders) {
-							authorizationProvider = authorizationProviders[provider as keyof AuthorizationProviders]
+						if (oAuth2AuthorizationProviders && provider in oAuth2AuthorizationProviders) {
+							authorizationProvider =
+								oAuth2AuthorizationProviders[provider as keyof OAuth2AuthorizationProviders]
 						}
 
 						if (!authorizationProvider) {
@@ -416,7 +418,7 @@ export function createAuth<
 				accountId,
 				userId
 			}: {
-				provider: keyof AuthorizationProviders
+				provider: keyof OAuth2AuthorizationProviders
 				accountId: string
 				userId: string
 			}) {
@@ -495,11 +497,11 @@ export function createAuth<
 				callbackUrl,
 				userId
 			}: {
-				provider: keyof AuthorizationProviders
+				provider: keyof OAuth2AuthorizationProviders
 				callbackUrl: string
 				userId: string
 			}) {
-				if (!authorizationProviders || !authorizationProviders[provider]) {
+				if (!oAuth2AuthorizationProviders || !oAuth2AuthorizationProviders[provider]) {
 					throw new Error(`Authorization provider ${String(provider)} not found`)
 				}
 
@@ -514,7 +516,7 @@ export function createAuth<
 
 				const redirectUri = `${authUrl}/auth/authorization/${String(provider)}`
 
-				const url = await authorizationProviders[provider].getAuthorizationUrl({
+				const url = await oAuth2AuthorizationProviders[provider].getAuthorizationUrl({
 					redirectUri,
 					state
 				})
@@ -525,11 +527,11 @@ export function createAuth<
 				accountId,
 				userId
 			}: {
-				provider: keyof AuthorizationProviders
+				provider: keyof OAuth2AuthorizationProviders
 				accountId: string
 				userId: string
 			}) {
-				if (!authorizationProviders || !authorizationProviders[provider]) {
+				if (!oAuth2AuthorizationProviders || !oAuth2AuthorizationProviders[provider]) {
 					throw new Error(`Authorization provider ${String(provider)} not found`)
 				}
 
@@ -539,6 +541,12 @@ export function createAuth<
 					userId
 				})
 			}
+		},
+		__types: {
+			TUser: undefined as unknown as NonNullable<
+				Awaited<ReturnType<DatabaseProvider['getSession']>>
+			>['user'],
+			TOAuth2AuthorizationProviders: undefined as unknown as keyof OAuth2AuthorizationProviders
 		}
 	}
 }

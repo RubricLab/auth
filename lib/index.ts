@@ -14,3 +14,5 @@ export {
 } from './providers/google'
 
 export { createResendMagicLinkAuthenticationProvider } from './providers/resend'
+
+export { prismaAdapter } from './providers/prisma'
