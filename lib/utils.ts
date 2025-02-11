@@ -206,11 +206,12 @@ export function createAuth<
 					}>
 				}
 			) {
-				const { auth } = await params
+				const {
+					auth: [method, provider]
+				} = await params
 				const { searchParams } = new URL(request.url)
 				const code = searchParams.get('code')
 				const state = searchParams.get('state')
-				const [method, provider] = auth
 
 				if (!code || !state) {
 					return new Response('Missing code or state parameter', { status: 400 })
