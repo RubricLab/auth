@@ -1,5 +1,27 @@
 import { createOauth2AuthenticationProvider, createOauth2AuthorizationProvider } from '../utils'
 
+// Google OAuth Scopes
+// Reference: https://developers.google.com/identity/protocols/oauth2/scopes
+export type GoogleScope =
+	// User info scopes
+	| 'https://www.googleapis.com/auth/userinfo.profile'
+	| 'https://www.googleapis.com/auth/userinfo.email'
+	// Gmail scopes
+	| 'https://www.googleapis.com/auth/gmail.readonly'
+	| 'https://www.googleapis.com/auth/gmail.modify'
+	| 'https://www.googleapis.com/auth/gmail.compose'
+	| 'https://www.googleapis.com/auth/gmail.send'
+	| 'https://www.googleapis.com/auth/gmail.full'
+	// Drive scopes
+	| 'https://www.googleapis.com/auth/drive.readonly'
+	| 'https://www.googleapis.com/auth/drive.file'
+	| 'https://www.googleapis.com/auth/drive'
+	| 'https://www.googleapis.com/auth/drive.appdata'
+	// Calendar scopes
+	| 'https://www.googleapis.com/auth/calendar.readonly'
+	| 'https://www.googleapis.com/auth/calendar.events'
+	| 'https://www.googleapis.com/auth/calendar'
+
 export const createGoogleAuthenticationProvider = ({
 	googleClientId,
 	googleClientSecret
@@ -16,7 +38,12 @@ export const createGoogleAuthenticationProvider = ({
 			url.searchParams.set('response_type', 'code')
 			url.searchParams.set(
 				'scope',
-				'https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/userinfo.profile'
+				(
+					[
+						'https://www.googleapis.com/auth/userinfo.email',
+						'https://www.googleapis.com/auth/userinfo.profile'
+					] satisfies GoogleScope[]
+				).join(' ')
 			)
 			url.searchParams.set('state', state)
 			url.searchParams.set('access_type', 'offline')
@@ -100,7 +127,7 @@ export const createGoogleAuthorizationProvider = ({
 }: {
 	googleClientId: string
 	googleClientSecret: string
-	scopes: string[]
+	scopes: GoogleScope[]
 }) =>
 	createOauth2AuthorizationProvider({
 		getAuthorizationUrl: async ({ redirectUri, state }) => {

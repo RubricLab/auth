@@ -13,6 +13,11 @@ export {
 	createGoogleAuthorizationProvider
 } from './providers/google'
 
+export {
+	createGithubAuthenticationProvider,
+	createGithubAuthorizationProvider
+} from './providers/github'
+
 export { createResendMagicLinkAuthenticationProvider } from './providers/resend'
 
 export { prismaAdapter } from './providers/prisma'
