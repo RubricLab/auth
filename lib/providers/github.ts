@@ -115,8 +115,7 @@ export const createGithubAuthenticationProvider = ({
 				email: primaryEmail
 			}
 		},
-		refreshToken: async ({ refreshToken }) => {
-			// GitHub's OAuth tokens don't expire by default
+		refreshToken: async ({ refreshToken: _refreshToken }) => {
 			throw new Error('GitHub OAuth tokens do not support refreshing')
 		}
 	})
@@ -184,7 +183,6 @@ export const createGithubAuthorizationProvider = ({
 				throw new Error(`Failed to get user: ${data.message}`)
 			}
 
-			// Get user's email if it's not public
 			const emailResponse = await fetch('https://api.github.com/user/emails', {
 				headers: {
 					Authorization: `Bearer ${accessToken}`,
@@ -200,8 +198,7 @@ export const createGithubAuthorizationProvider = ({
 				email: primaryEmail
 			}
 		},
-		refreshToken: async ({ refreshToken }) => {
-			// GitHub's OAuth tokens don't expire by default
+		refreshToken: async ({ refreshToken: _refreshToken }) => {
 			throw new Error('GitHub OAuth tokens do not support refreshing')
 		}
 	})
