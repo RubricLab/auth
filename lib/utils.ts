@@ -130,22 +130,32 @@ export function createAuth<
 			throw new Error(`Authentication provider ${String(provider)} not found`)
 		}
 
-		const {
-			accessToken,
-			refreshToken: newRefreshToken,
-			expiresAt
-		} = await authenticationProvider.refreshToken({
-			refreshToken: account.refreshToken
-		})
+		try {
+			const {
+				accessToken,
+				refreshToken: newRefreshToken,
+				expiresAt
+			} = await authenticationProvider.refreshToken({
+				refreshToken: account.refreshToken
+			})
 
-		return await databaseProvider.updateOAuth2AuthenticationAccount({
-			userId: account.userId,
-			provider: account.provider,
-			accountId: account.accountId,
-			accessToken,
-			refreshToken: newRefreshToken || account.refreshToken,
-			expiresAt
-		})
+			return await databaseProvider.updateOAuth2AuthenticationAccount({
+				userId: account.userId,
+				provider: account.provider,
+				accountId: account.accountId,
+				accessToken,
+				refreshToken: newRefreshToken || account.refreshToken,
+				expiresAt
+			})
+		} catch (error) {
+			await databaseProvider.deleteOAuth2AuthenticationAccount({
+				userId: account.userId,
+				provider: account.provider,
+				accountId: account.accountId
+			})
+
+			throw error
+		}
 	}
 
 	async function refreshOauth2AuthorizationToken({
@@ -174,18 +184,28 @@ export function createAuth<
 			throw new Error(`Authorization provider ${String(provider)} not found`)
 		}
 
-		const { accessToken, refreshToken, expiresAt } = await authorizationProvider.refreshToken({
-			refreshToken: account.refreshToken
-		})
+		try {
+			const { accessToken, refreshToken, expiresAt } = await authorizationProvider.refreshToken({
+				refreshToken: account.refreshToken
+			})
 
-		return await databaseProvider.updateOAuth2AuthorizationAccount({
-			userId: account.userId,
-			provider: account.provider,
-			accountId: account.accountId,
-			accessToken,
-			refreshToken: refreshToken || account.refreshToken,
-			expiresAt
-		})
+			return await databaseProvider.updateOAuth2AuthorizationAccount({
+				userId: account.userId,
+				provider: account.provider,
+				accountId: account.accountId,
+				accessToken,
+				refreshToken: refreshToken || account.refreshToken,
+				expiresAt
+			})
+		} catch (error) {
+			await databaseProvider.deleteOAuth2AuthorizationAccount({
+				provider: account.provider,
+				accountId: account.accountId,
+				userId: account.userId
+			})
+
+			throw error
+		}
 	}
 
 	return {

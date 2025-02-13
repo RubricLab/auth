@@ -150,6 +150,18 @@ export type DatabaseProvider = {
 		refreshToken: string
 		expiresAt: Date
 	}>
+	deleteOAuth2AuthenticationAccount: (data: {
+		userId: string
+		provider: string
+		accountId: string
+	}) => Promise<{
+		userId: string
+		provider: string
+		accountId: string
+		accessToken: string
+		refreshToken: string
+		expiresAt: Date
+	}>
 	getOAuth2AuthorizationAccount: (data: {
 		provider: string
 		accountId: string

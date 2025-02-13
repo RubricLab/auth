@@ -67,6 +67,9 @@ export function prismaAdapter<TUser extends GenericUser>(db: {
 		findUniqueOrThrow: (args: {
 			where: { userId_provider_accountId: { userId: string; provider: string; accountId: string } }
 		}) => Promise<OAuth2Account>
+		delete: (args: {
+			where: { userId_provider_accountId: { userId: string; provider: string; accountId: string } }
+		}) => Promise<OAuth2Account>
 		update: (args: {
 			where: { userId_provider_accountId: { userId: string; provider: string; accountId: string } }
 			data: Partial<OAuth2Account>
@@ -154,6 +157,20 @@ export function prismaAdapter<TUser extends GenericUser>(db: {
 					}
 				},
 				data
+			}),
+		deleteOAuth2AuthenticationAccount: (data: {
+			userId: string
+			provider: string
+			accountId: string
+		}) =>
+			db.oAuth2AuthenticationAccount.delete({
+				where: {
+					userId_provider_accountId: {
+						userId: data.userId,
+						provider: data.provider,
+						accountId: data.accountId
+					}
+				}
 			}),
 		getOAuth2AuthorizationAccount: (data: { userId: string; provider: string; accountId: string }) =>
 			db.oAuth2AuthorizationAccount.findUniqueOrThrow({

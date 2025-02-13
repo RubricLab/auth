@@ -1,3 +1,4 @@
+- [2025-02-13] [github expire tokens later, delete account if refresh fails](https://github.com/RubricLab/auth/commit/8a873404076151a7f0eaf490a8d8e9c483349d56)
 - [2025-02-13] [biome shiz](https://github.com/RubricLab/auth/commit/c9e3cc3f887614a11907fcfbc137092bed3cfcf8)
 - [2025-02-13] [github providers](https://github.com/RubricLab/auth/commit/e98d787af8ac54d174fddd8c5938b960d5d72462)
 - [2025-02-07] [expire sessions after 30 days](https://github.com/RubricLab/auth/commit/bcb4a8bf8a3601afffb2ad1ecef21061850e24db)

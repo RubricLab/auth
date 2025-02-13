@@ -82,7 +82,7 @@ export const createGithubAuthenticationProvider = ({
 			return {
 				accessToken: data.access_token,
 				refreshToken: '', // GitHub doesn't provide refresh tokens
-				expiresAt: new Date(Date.now() + 1000 * 60 * 365) // GitHub tokens don't expire by default
+				expiresAt: new Date(Date.now() + 1000 * 60 * 60 * 24 * 365) // GitHub tokens don't expire by default
 			}
 		},
 		getUser: async ({ accessToken }) => {
@@ -165,7 +165,7 @@ export const createGithubAuthorizationProvider = ({
 			return {
 				accessToken: data.access_token,
 				refreshToken: '', // GitHub doesn't provide refresh tokens
-				expiresAt: new Date(Date.now() + 1000 * 60 * 365) // GitHub tokens don't expire by default
+				expiresAt: new Date(Date.now() + 1000 * 60 * 60 * 24 * 365) // GitHub tokens don't expire by default
 			}
 		},
 		getUser: async ({ accessToken }) => {
