@@ -325,7 +325,9 @@ export function createAuth<
 								return redirect(callbackUrl)
 							}
 							case 'magiclink': {
-								return
+								return new Response('Magic link not yet supported', {
+									status: 400
+								})
 							}
 						}
 						break
@@ -375,8 +377,10 @@ export function createAuth<
 								return redirect(callbackUrl)
 							}
 						}
+						return new Response('Invalid authorization method', { status: 400 })
 					}
 				}
+				return new Response('Invalid method', { status: 400 })
 			}
 		},
 		actions: {

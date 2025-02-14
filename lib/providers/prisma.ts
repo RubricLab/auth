@@ -119,7 +119,11 @@ export function prismaAdapter<TUser extends GenericUser>(db: {
 			where: { key: string }
 			include?: {
 				user: {
-					include: { oAuth2AuthenticationAccounts: boolean; oAuth2AuthorizationAccounts: boolean }
+					include: {
+						oAuth2AuthenticationAccounts: true
+						oAuth2AuthorizationAccounts: true
+						apiKeyAuthorizationAccounts: true
+					}
 				}
 			}
 		}) => Promise<(Session & { user?: TUser }) | null>
