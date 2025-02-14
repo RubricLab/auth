@@ -2,6 +2,7 @@ import { cookies as nextCookies } from 'next/headers'
 import { redirect } from 'next/navigation'
 
 import type {
+	ApiKeyAuthorizationProvider,
 	AuthUrl,
 	AuthorizationProvider,
 	DatabaseProvider as GenericDatabaseProvider,
@@ -86,21 +87,39 @@ export function createMagicLinkAuthenticationProvider({
 	}
 }
 
+export function createApiKeyAuthorizationProvider({
+	apiKeyUrl,
+	getUser
+}: {
+	apiKeyUrl: string
+	getUser: (options: { apiKey: string }) => Promise<{
+		accountId: string
+	}>
+}): ApiKeyAuthorizationProvider {
+	return {
+		method: 'apikey',
+		apiKeyUrl,
+		getUser
+	}
+}
 export function createAuth<
 	OAuth2AuthenticationProviders extends Record<string, Oauth2AuthenticationProvider>,
 	MagicLinkAuthenticationProviders extends Record<string, MagicLinkAuthenticationProvider>,
 	OAuth2AuthorizationProviders extends Record<string, Oauth2AuthorizationProvider>,
+	ApiKeyAuthorizationProviders extends Record<string, ApiKeyAuthorizationProvider>,
 	DatabaseProvider extends GenericDatabaseProvider
 >({
 	oAuth2AuthenticationProviders,
 	magicLinkAuthenticationProviders,
 	oAuth2AuthorizationProviders,
+	apiKeyAuthorizationProviders,
 	databaseProvider,
 	authUrl
 }: {
 	oAuth2AuthenticationProviders?: OAuth2AuthenticationProviders
 	magicLinkAuthenticationProviders?: MagicLinkAuthenticationProviders
 	oAuth2AuthorizationProviders?: OAuth2AuthorizationProviders
+	apiKeyAuthorizationProviders?: ApiKeyAuthorizationProviders
 	databaseProvider: DatabaseProvider
 	authUrl: AuthUrl
 }) {
@@ -561,6 +580,40 @@ export function createAuth<
 					accountId,
 					userId
 				})
+			},
+			async saveAuthorizationAccessToken({
+				provider,
+				userId,
+				apiKey
+			}: {
+				provider: keyof ApiKeyAuthorizationProviders
+				userId: string
+				apiKey: string
+			}) {
+				if (!apiKeyAuthorizationProviders || !apiKeyAuthorizationProviders[provider]) {
+					throw new Error(`AccessToken provider ${String(provider)} not found`)
+				}
+
+				const { accountId } = await apiKeyAuthorizationProviders[provider].getUser({ apiKey })
+
+				await databaseProvider.createApiKeyAuthorizationAccount({
+					userId,
+					provider: String(provider),
+					accountId,
+					apiKey
+				})
+			},
+			async getAuthConstants() {
+				return {
+					...(Object.fromEntries(
+						Object.entries(apiKeyAuthorizationProviders ?? {}).map(([provider, { apiKeyUrl }]) => [
+							`${String(provider).toUpperCase()}_API_KEY_CONFIG_URL`,
+							apiKeyUrl
+						])
+					) as {
+						[K in keyof ApiKeyAuthorizationProviders as `${Uppercase<string & K>}_API_KEY_CONFIG_URL`]: string
+					})
+				}
 			}
 		},
 		__types: {

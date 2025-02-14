@@ -20,4 +20,8 @@ export {
 
 export { createResendMagicLinkAuthenticationProvider } from './providers/resend'
 
+export { createVercelAuthenticationProvider } from './providers/vercel'
+
+export { createBrexAuthenticationProvider } from './providers/brex'
+
 export { prismaAdapter } from './providers/prisma'

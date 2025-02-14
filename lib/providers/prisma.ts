@@ -24,6 +24,13 @@ type MagicLinkRequest = {
 	expiresAt: Date
 }
 
+type ApiKeyAuthorizationAccount = {
+	userId: string
+	provider: string
+	accountId: string
+	apiKey: string
+}
+
 type GenericUser = {
 	id: string
 	email: string
@@ -49,6 +56,11 @@ type Session = {
 			accessToken: string
 			refreshToken: string
 			expiresAt: Date
+		}>
+		apiKeyAuthorizationAccounts: Array<{
+			provider: string
+			accountId: string
+			apiKey: string
 		}>
 	}
 }
@@ -87,6 +99,12 @@ export function prismaAdapter<TUser extends GenericUser>(db: {
 			where: { userId_provider_accountId: { userId: string; provider: string; accountId: string } }
 			data: Partial<OAuth2Account>
 		}) => Promise<OAuth2Account>
+	}
+	apiKeyAuthorizationAccount: {
+		create: (args: { data: ApiKeyAuthorizationAccount }) => Promise<ApiKeyAuthorizationAccount>
+		findUniqueOrThrow: (args: {
+			where: { userId_provider_accountId: { userId: string; provider: string; accountId: string } }
+		}) => Promise<ApiKeyAuthorizationAccount>
 	}
 	magicLinkRequest: {
 		create: (args: { data: MagicLinkRequest }) => Promise<MagicLinkRequest>
@@ -132,7 +150,8 @@ export function prismaAdapter<TUser extends GenericUser>(db: {
 					user: {
 						include: {
 							oAuth2AuthenticationAccounts: true,
-							oAuth2AuthorizationAccounts: true
+							oAuth2AuthorizationAccounts: true,
+							apiKeyAuthorizationAccounts: true
 						}
 					}
 				}
@@ -208,6 +227,12 @@ export function prismaAdapter<TUser extends GenericUser>(db: {
 					}
 				},
 				data
-			})
+			}),
+		createApiKeyAuthorizationAccount: (data: {
+			userId: string
+			provider: string
+			accountId: string
+			apiKey: string
+		}) => db.apiKeyAuthorizationAccount.create({ data })
 	} satisfies GenericDatabaseProvider
 }

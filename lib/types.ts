@@ -47,8 +47,15 @@ export type MagicLinkAuthenticationProvider = {
 	sendEmail: (options: { email: string; url: string }) => Promise<void>
 }
 
+export type ApiKeyAuthorizationProvider = {
+	method: 'apikey'
+	apiKeyUrl: string
+	getUser: (options: { apiKey: string }) => Promise<{
+		accountId: string
+	}>
+}
 export type AuthenticationProvider = Oauth2AuthenticationProvider | MagicLinkAuthenticationProvider
-export type AuthorizationProvider = Oauth2AuthorizationProvider
+export type AuthorizationProvider = Oauth2AuthorizationProvider | ApiKeyAuthorizationProvider
 
 export type DatabaseProvider = {
 	createOAuth2AuthenticationRequest: (data: {
@@ -92,6 +99,11 @@ export type DatabaseProvider = {
 		userId: string
 		expiresAt: Date
 		user: {
+			apiKeyAuthorizationAccounts: {
+				provider: string
+				accountId: string
+				apiKey: string
+			}[]
 			oAuth2AuthenticationAccounts: {
 				provider: string
 				accountId: string
@@ -215,6 +227,17 @@ export type DatabaseProvider = {
 		accessToken: string
 		refreshToken: string
 		expiresAt: Date
+	}>
+	createApiKeyAuthorizationAccount: (data: {
+		userId: string
+		provider: string
+		accountId: string
+		apiKey: string
+	}) => Promise<{
+		userId: string
+		provider: string
+		accountId: string
+		apiKey: string
 	}>
 	getUser: (data: { email: string }) => Promise<{
 		id: string
