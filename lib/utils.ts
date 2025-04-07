@@ -536,7 +536,7 @@ export function createAuth<
 				} as Awaited<ReturnType<DatabaseProvider['getSession']>>
 			},
 
-			async connect({
+			async connectOAuth2AuthorizationAccount({
 				provider,
 				callbackUrl,
 				userId
@@ -566,7 +566,7 @@ export function createAuth<
 				})
 				redirect(url.toString())
 			},
-			async disconnect({
+			async disconnectOAuth2AuthorizationAccount({
 				provider,
 				accountId,
 				userId
@@ -605,6 +605,25 @@ export function createAuth<
 					provider: String(provider),
 					accountId,
 					apiKey
+				})
+			},
+			async disconnectApiKeyAuthorizationAccount({
+				provider,
+				accountId,
+				userId
+			}: {
+				provider: keyof ApiKeyAuthorizationProviders
+				accountId: string
+				userId: string
+			}) {
+				if (!apiKeyAuthorizationProviders || !apiKeyAuthorizationProviders[provider]) {
+					throw new Error(`AccessToken provider ${String(provider)} not found`)
+				}
+
+				await databaseProvider.deleteApiKeyAuthorizationAccount({
+					provider: String(provider),
+					accountId,
+					userId
 				})
 			},
 			async getAuthConstants() {

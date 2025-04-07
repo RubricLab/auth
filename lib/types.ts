@@ -239,6 +239,16 @@ export type DatabaseProvider = {
 		accountId: string
 		apiKey: string
 	}>
+	deleteApiKeyAuthorizationAccount: (data: {
+		provider: string
+		accountId: string
+		userId: string
+	}) => Promise<{
+		userId: string
+		provider: string
+		accountId: string
+		apiKey: string
+	}>
 	getUser: (data: { email: string }) => Promise<{
 		id: string
 		email: string

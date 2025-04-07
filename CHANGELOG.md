@@ -1,3 +1,4 @@
+- [2025-04-07] [verbose utils, bump](https://github.com/RubricLab/auth/commit/fd78ca0bc1824339b2b1a6ffb72eccc5c13d8d1c)
 - [2025-02-14] [fix build](https://github.com/RubricLab/auth/commit/c54af553ae56c720d886f97e6ee510bbb2ade498)
 - [2025-02-14] [apiKeyAuthorizationProviders, vercel, brex](https://github.com/RubricLab/auth/commit/498233933eccab4cb147a0b4bd8a01f75ccc2a75)
 - [2025-02-13] [github expire tokens later, delete account if refresh fails](https://github.com/RubricLab/auth/commit/8a873404076151a7f0eaf490a8d8e9c483349d56)

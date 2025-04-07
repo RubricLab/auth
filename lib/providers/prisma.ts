@@ -105,6 +105,9 @@ export function prismaAdapter<TUser extends GenericUser>(db: {
 		findUniqueOrThrow: (args: {
 			where: { userId_provider_accountId: { userId: string; provider: string; accountId: string } }
 		}) => Promise<ApiKeyAuthorizationAccount>
+		delete: (args: {
+			where: { userId_provider_accountId: { userId: string; provider: string; accountId: string } }
+		}) => Promise<ApiKeyAuthorizationAccount>
 	}
 	magicLinkRequest: {
 		create: (args: { data: MagicLinkRequest }) => Promise<MagicLinkRequest>
@@ -237,6 +240,20 @@ export function prismaAdapter<TUser extends GenericUser>(db: {
 			provider: string
 			accountId: string
 			apiKey: string
-		}) => db.apiKeyAuthorizationAccount.create({ data })
+		}) => db.apiKeyAuthorizationAccount.create({ data }),
+		deleteApiKeyAuthorizationAccount: (data: {
+			userId: string
+			provider: string
+			accountId: string
+		}) =>
+			db.apiKeyAuthorizationAccount.delete({
+				where: {
+					userId_provider_accountId: {
+						userId: data.userId,
+						provider: data.provider,
+						accountId: data.accountId
+					}
+				}
+			})
 	} satisfies GenericDatabaseProvider
 }
