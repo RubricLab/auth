@@ -1,3 +1,4 @@
+- [2025-04-15] [Boil more types](https://github.com/RubricLab/auth/commit/5ebdc5690fc6e83773869c2aaf7d5794d51b8b66)
 - [2025-04-15] [Expose token and session types](https://github.com/RubricLab/auth/commit/e898a1f64f1ea77bdd02ce89ff027c2f7593d89f)
 - [2025-04-07] [verbose utils, bump](https://github.com/RubricLab/auth/commit/fd78ca0bc1824339b2b1a6ffb72eccc5c13d8d1c)
 - [2025-02-14] [fix build](https://github.com/RubricLab/auth/commit/c54af553ae56c720d886f97e6ee510bbb2ade498)

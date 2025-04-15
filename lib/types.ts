@@ -1,10 +1,21 @@
 // export type AuthUrl = `http${'s' | ''}://${string}${'.' | ':'}${string}`
 export type AuthUrl = string
+
 export type Token = {
 	accessToken: string
 	refreshToken: string
 	expiresAt: Date
 }
+
+export type Account = {
+	userId: string
+	provider: string
+	accountId: string
+	accessToken: string
+	refreshToken: string
+	expiresAt: Date
+}
+
 export type Session = {
 	key: string
 	userId: string
@@ -31,6 +42,7 @@ export type Session = {
 		}[]
 	}
 }
+
 export type Oauth2AuthenticationProvider = {
 	method: 'oauth2'
 	getAuthenticationUrl: (options: { redirectUri: string; state: string }) => Promise<URL>
@@ -76,6 +88,7 @@ export type ApiKeyAuthorizationProvider = {
 		accountId: string
 	}>
 }
+
 export type AuthenticationProvider = Oauth2AuthenticationProvider | MagicLinkAuthenticationProvider
 export type AuthorizationProvider = Oauth2AuthorizationProvider | ApiKeyAuthorizationProvider
 
@@ -121,110 +134,26 @@ export type DatabaseProvider = {
 		provider: string
 		accountId: string
 		userId: string
-	}) => Promise<{
-		userId: string
-		provider: string
-		accountId: string
-		accessToken: string
-		refreshToken: string
-		expiresAt: Date
-	}>
-	createOAuth2AuthenticationAccount: (data: {
-		userId: string
-		provider: string
-		accountId: string
-		accessToken: string
-		refreshToken: string
-		expiresAt: Date
-	}) => Promise<{
-		userId: string
-		provider: string
-		accountId: string
-		accessToken: string
-		refreshToken: string
-		expiresAt: Date
-	}>
-	updateOAuth2AuthenticationAccount: (data: {
-		userId: string
-		provider: string
-		accountId: string
-		accessToken: string
-		refreshToken: string
-		expiresAt: Date
-	}) => Promise<{
-		userId: string
-		provider: string
-		accountId: string
-		accessToken: string
-		refreshToken: string
-		expiresAt: Date
-	}>
+	}) => Promise<Account>
+	createOAuth2AuthenticationAccount: (data: Account) => Promise<Account>
+	updateOAuth2AuthenticationAccount: (data: Account) => Promise<Account>
 	deleteOAuth2AuthenticationAccount: (data: {
 		userId: string
 		provider: string
 		accountId: string
-	}) => Promise<{
-		userId: string
-		provider: string
-		accountId: string
-		accessToken: string
-		refreshToken: string
-		expiresAt: Date
-	}>
+	}) => Promise<Account>
 	getOAuth2AuthorizationAccount: (data: {
 		provider: string
 		accountId: string
 		userId: string
-	}) => Promise<{
-		userId: string
-		provider: string
-		accountId: string
-		accessToken: string
-		refreshToken: string
-		expiresAt: Date
-	}>
-	createOAuth2AuthorizationAccount: (data: {
-		userId: string
-		provider: string
-		accountId: string
-		accessToken: string
-		refreshToken: string
-		expiresAt: Date
-	}) => Promise<{
-		userId: string
-		provider: string
-		accountId: string
-		accessToken: string
-		refreshToken: string
-		expiresAt: Date
-	}>
+	}) => Promise<Account>
+	createOAuth2AuthorizationAccount: (data: Account) => Promise<Account>
 	deleteOAuth2AuthorizationAccount: (data: {
 		provider: string
 		accountId: string
 		userId: string
-	}) => Promise<{
-		userId: string
-		provider: string
-		accountId: string
-		accessToken: string
-		refreshToken: string
-		expiresAt: Date
-	}>
-	updateOAuth2AuthorizationAccount: (data: {
-		userId: string
-		provider: string
-		accountId: string
-		accessToken: string
-		refreshToken: string
-		expiresAt: Date
-	}) => Promise<{
-		userId: string
-		provider: string
-		accountId: string
-		accessToken: string
-		refreshToken: string
-		expiresAt: Date
-	}>
+	}) => Promise<Account>
+	updateOAuth2AuthorizationAccount: (data: Account) => Promise<Account>
 	createApiKeyAuthorizationAccount: (data: {
 		userId: string
 		provider: string
