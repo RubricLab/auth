@@ -1,0 +1,14 @@
+{
+	"extends": "@rubriclab/config/tsconfig",
+	"compilerOptions": {
+		"noEmit": false,
+		"declaration": true,
+		"emitDeclarationOnly": true,
+		"outDir": "./lib",
+		"rootDir": "./lib",
+		"jsx": "react",
+		"moduleResolution": "bundler"
+	},
+	"include": ["lib/**/*"],
+	"exclude": ["node_modules"]
+}

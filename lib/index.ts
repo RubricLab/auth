@@ -1,3 +1,7 @@
+export * from './types'
+
+export { ClientAuthProvider } from './client'
+
 export { createAuth } from './utils'
 
 export {
@@ -5,8 +9,6 @@ export {
 	createOauth2AuthorizationProvider,
 	createMagicLinkAuthenticationProvider
 } from './utils'
-
-export { ClientAuthProvider } from './client'
 
 export {
 	createGoogleAuthenticationProvider,
