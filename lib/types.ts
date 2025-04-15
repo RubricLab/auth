@@ -16,33 +16,6 @@ export type Account = {
 	expiresAt: Date
 }
 
-export type Session = {
-	key: string
-	userId: string
-	expiresAt: Date
-	user: {
-		apiKeyAuthorizationAccounts: {
-			provider: string
-			accountId: string
-			apiKey: string
-		}[]
-		oAuth2AuthenticationAccounts: {
-			provider: string
-			accountId: string
-			accessToken: string
-			refreshToken: string
-			expiresAt: Date
-		}[]
-		oAuth2AuthorizationAccounts: {
-			provider: string
-			accountId: string
-			accessToken: string
-			refreshToken: string
-			expiresAt: Date
-		}[]
-	}
-}
-
 export type Oauth2AuthenticationProvider = {
 	method: 'oauth2'
 	getAuthenticationUrl: (options: { redirectUri: string; state: string }) => Promise<URL>
@@ -129,7 +102,32 @@ export type DatabaseProvider = {
 		email: string
 		expiresAt: Date
 	}>
-	getSession: (data: { key: string }) => Promise<Session | null>
+	getSession: (data: { key: string }) => Promise<{
+		key: string
+		userId: string
+		expiresAt: Date
+		user: {
+			apiKeyAuthorizationAccounts: {
+				provider: string
+				accountId: string
+				apiKey: string
+			}[]
+			oAuth2AuthenticationAccounts: {
+				provider: string
+				accountId: string
+				accessToken: string
+				refreshToken: string
+				expiresAt: Date
+			}[]
+			oAuth2AuthorizationAccounts: {
+				provider: string
+				accountId: string
+				accessToken: string
+				refreshToken: string
+				expiresAt: Date
+			}[]
+		}
+	} | null>
 	getOAuth2AuthenticationAccount: (data: {
 		provider: string
 		accountId: string

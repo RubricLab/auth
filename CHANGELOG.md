@@ -1,3 +1,4 @@
+- [2025-04-15] [Revert export of generic](https://github.com/RubricLab/auth/commit/2e2f194aaba2989e4587e308ab4ce1664507dfee)
 - [2025-04-15] [Add tsconfig.json; export types and functions from index.ts](https://github.com/RubricLab/auth/commit/f55dbe15af79d7879761edbb1feaa823a914e46a)
 - [2025-04-15] [export session type through config flow](https://github.com/RubricLab/auth/commit/75623bea479d8ab792b181b5cc455db8b1744e7b)
 - [2025-04-15] [Boil more types](https://github.com/RubricLab/auth/commit/5ebdc5690fc6e83773869c2aaf7d5794d51b8b66)
