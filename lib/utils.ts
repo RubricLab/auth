@@ -643,7 +643,10 @@ export function createAuth<
 			TUser: undefined as unknown as NonNullable<
 				Awaited<ReturnType<DatabaseProvider['getSession']>>
 			>['user'],
-			TOAuth2AuthorizationProviders: undefined as unknown as keyof OAuth2AuthorizationProviders
+			TOAuth2AuthorizationProviders: undefined as unknown as keyof OAuth2AuthorizationProviders,
+			TSession: undefined as unknown as NonNullable<
+				Awaited<ReturnType<DatabaseProvider['getSession']>>
+			>
 		}
 	}
 }
