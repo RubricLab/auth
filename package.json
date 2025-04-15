@@ -8,11 +8,11 @@
     "format": "bun x biome format --write .",
     "lint": "bun x biome check . && bun x biome lint .",
     "lint:fix": "bun x biome check --fix --unsafe . && bun x biome lint --write --unsafe .",
-    "build": "tsc",
+    "build": "bun build ./src/index.ts --outdir ./lib --target node --format cjs && tsc --emitDeclarationOnly --outDir lib",
     "prepublishOnly": "bun run build"
   },
   "name": "@rubriclab/auth",
-  "version": "0.0.36",
+  "version": "0.0.37",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "dependencies": {
@@ -32,8 +32,6 @@
   },
   "devDependencies": {
     "@biomejs/biome": "^1.9.4",
-    "typescript": "^5.3.3",
-    "@types/react": "^19.0.0",
-    "@types/node": "^20.11.19"
+    "typescript": "^5.3.3"
   }
 }

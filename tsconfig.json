@@ -1,20 +1,13 @@
 {
   "compilerOptions": {
-    "target": "ES2020",
-    "module": "CommonJS",
-    "lib": ["ES2020", "DOM"],
     "declaration": true,
+    "emitDeclarationOnly": true,
     "outDir": "./lib",
     "rootDir": "./src",
-    "strict": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
-    "forceConsistentCasingInFileNames": true,
-    "moduleResolution": "node",
-    "resolveJsonModule": true,
-    "isolatedModules": true,
     "jsx": "react-jsx"
   },
   "include": ["src/**/*"],
-  "exclude": ["node_modules", "lib", "**/*.test.ts", "**/*.spec.ts"]
+  "exclude": ["node_modules", "lib"]
 } 
