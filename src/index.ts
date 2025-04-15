@@ -1,3 +1,7 @@
+// Export all types
+export * from './types'
+
+// Export utils
 export { createAuth } from './utils'
 
 export {
@@ -6,8 +10,10 @@ export {
 	createMagicLinkAuthenticationProvider
 } from './utils'
 
+// Export client components
 export { ClientAuthProvider } from './client'
 
+// Export provider factories
 export {
 	createGoogleAuthenticationProvider,
 	createGoogleAuthorizationProvider
