@@ -1,14 +1,40 @@
 // export type AuthUrl = `http${'s' | ''}://${string}${'.' | ':'}${string}`
-
 export type AuthUrl = string
+export type Token = {
+	accessToken: string
+	refreshToken: string
+	expiresAt: Date
+}
+export type Session = {
+	key: string
+	userId: string
+	expiresAt: Date
+	user: {
+		apiKeyAuthorizationAccounts: {
+			provider: string
+			accountId: string
+			apiKey: string
+		}[]
+		oAuth2AuthenticationAccounts: {
+			provider: string
+			accountId: string
+			accessToken: string
+			refreshToken: string
+			expiresAt: Date
+		}[]
+		oAuth2AuthorizationAccounts: {
+			provider: string
+			accountId: string
+			accessToken: string
+			refreshToken: string
+			expiresAt: Date
+		}[]
+	}
+}
 export type Oauth2AuthenticationProvider = {
 	method: 'oauth2'
 	getAuthenticationUrl: (options: { redirectUri: string; state: string }) => Promise<URL>
-	getToken: (options: { code: string; redirectUri: string }) => Promise<{
-		accessToken: string
-		refreshToken: string
-		expiresAt: Date
-	}>
+	getToken: (options: { code: string; redirectUri: string }) => Promise<Token>
 	getUser: (options: { accessToken: string }) => Promise<{
 		accountId: string
 		email: string
@@ -26,11 +52,7 @@ export type Oauth2AuthorizationProvider = {
 		redirectUri: string
 		state: string
 	}) => Promise<URL>
-	getToken: (options: { code: string; redirectUri: string }) => Promise<{
-		accessToken: string
-		refreshToken: string
-		expiresAt: Date
-	}>
+	getToken: (options: { code: string; redirectUri: string }) => Promise<Token>
 	getUser: (options: { accessToken: string }) => Promise<{
 		accountId: string
 		email: string
@@ -94,32 +116,7 @@ export type DatabaseProvider = {
 		email: string
 		expiresAt: Date
 	}>
-	getSession: (data: { key: string }) => Promise<{
-		key: string
-		userId: string
-		expiresAt: Date
-		user: {
-			apiKeyAuthorizationAccounts: {
-				provider: string
-				accountId: string
-				apiKey: string
-			}[]
-			oAuth2AuthenticationAccounts: {
-				provider: string
-				accountId: string
-				accessToken: string
-				refreshToken: string
-				expiresAt: Date
-			}[]
-			oAuth2AuthorizationAccounts: {
-				provider: string
-				accountId: string
-				accessToken: string
-				refreshToken: string
-				expiresAt: Date
-			}[]
-		}
-	} | null>
+	getSession: (data: { key: string }) => Promise<Session | null>
 	getOAuth2AuthenticationAccount: (data: {
 		provider: string
 		accountId: string
