@@ -12,7 +12,7 @@
     "prepublishOnly": "bun run build"
   },
   "name": "@rubriclab/auth",
-  "version": "0.0.35",
+  "version": "0.0.36",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "dependencies": {

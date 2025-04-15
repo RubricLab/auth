@@ -1,6 +1,7 @@
 # Dependency directories
 node_modules/
 dist
+lib/
 .DS_Store
 
 # Output of 'npm pack'
