@@ -1,6 +1,6 @@
 'use client'
 
-import React, { createContext, useContext, type ReactNode } from 'react'
+import { type ReactNode, createContext, useContext } from 'react'
 import type { DatabaseProvider } from './types'
 
 const AuthContext = createContext<Awaited<ReturnType<DatabaseProvider['getSession']>>>(null)

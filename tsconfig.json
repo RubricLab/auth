@@ -1,13 +1,14 @@
 {
-  "compilerOptions": {
-    "declaration": true,
-    "emitDeclarationOnly": true,
-    "outDir": "./lib",
-    "rootDir": "./src",
-    "esModuleInterop": true,
-    "skipLibCheck": true,
-    "jsx": "react-jsx"
-  },
-  "include": ["src/**/*"],
-  "exclude": ["node_modules", "lib"]
-} 
+	"extends": "@rubriclab/config/tsconfig",
+	"compilerOptions": {
+		"noEmit": false, // Override base config
+		"declaration": true,
+		"emitDeclarationOnly": true,
+		"outDir": "./lib",
+		"rootDir": "./src",
+		"jsx": "react-jsx",
+		"moduleResolution": "bundler" // Match base config, explicitly specifying intent here to prevent future conflicts
+	},
+	"include": ["src/**/*"],
+	"exclude": ["node_modules", "lib"]
+}

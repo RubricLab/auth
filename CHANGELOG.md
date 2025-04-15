@@ -1,3 +1,4 @@
+- [2025-04-15] [Use extended tsconfig.json](https://github.com/RubricLab/auth/commit/2a93ad81f1cac937657a51f48d8d3d7fe8225676)
 - [2025-04-15] [Use bun build instead of tsc](https://github.com/RubricLab/auth/commit/d2582a1105d085bd704c29c519ff8f589c3de070)
 - [2025-04-15] [Remove lib directory](https://github.com/RubricLab/auth/commit/9a98adc811abad9fd4bfa5609c6327b8d53613c4)
 - [2025-04-15] [Add build step](https://github.com/RubricLab/auth/commit/c792ed6246c0f31a16d39a45fb6a9b84055b2183)

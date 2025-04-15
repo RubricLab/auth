@@ -1,4 +1,3 @@
-// export type AuthUrl = `http${'s' | ''}://${string}${'.' | ':'}${string}`
 export type AuthUrl = string
 
 export type Token = {

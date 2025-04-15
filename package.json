@@ -16,7 +16,6 @@
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "dependencies": {
-    "@rubriclab/config": "*",
     "@rubriclab/package": "*",
     "react": "^19.0.0",
     "resend": "^4.1.2"
@@ -32,6 +31,7 @@
   },
   "devDependencies": {
     "@biomejs/biome": "^1.9.4",
-    "typescript": "^5.3.3"
+    "typescript": "^5.3.3",
+    "@rubriclab/config": "*"
   }
 }
