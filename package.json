@@ -10,7 +10,7 @@
     "lint:fix": "bun x biome check --fix --unsafe . && bun x biome lint --write --unsafe ."
   },
   "name": "@rubriclab/auth",
-  "version": "0.0.37",
+  "version": "0.0.38",
   "main": "lib/index.ts",
   "dependencies": {
     "@rubriclab/config": "*",

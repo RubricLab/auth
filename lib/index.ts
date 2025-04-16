@@ -27,3 +27,4 @@ export { createVercelAuthenticationProvider } from './providers/vercel'
 export { createBrexAuthenticationProvider } from './providers/brex'
 
 export { prismaAdapter } from './providers/prisma'
+export { drizzleAdapter } from './providers/drizzle'
