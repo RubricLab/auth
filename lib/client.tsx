@@ -20,5 +20,8 @@ export function useSession() {
 	if (context === undefined) {
 		throw new Error('useSession must be used within a ClientAuthProvider')
 	}
+	if (context === null) {
+		throw new Error('session is null')
+	}
 	return context
 }
