@@ -181,6 +181,7 @@ export function drizzleAdapter<TUser extends typeof users>(
 					.where(eq(oAuth2AuthorizationAccounts.userId, session.userId))
 
 				return {
+					...userRecord,
 					apiKeyAuthorizationAccounts: apiKeyAccounts,
 					oAuth2AuthenticationAccounts: oAuth2AuthAccounts,
 					oAuth2AuthorizationAccounts: oAuth2AuthzAccounts
@@ -404,3 +405,12 @@ export function drizzleAdapter<TUser extends typeof users>(
 		}
 	} satisfies GenericDatabaseProvider
 }
+
+export type DrizzleSession<TUser extends typeof users.$inferSelect> =
+	typeof sessions.$inferSelect & {
+		user: {
+			apiKeyAuthorizationAccounts: (typeof apiKeyAuthorizationAccounts.$inferSelect)[]
+			oAuth2AuthenticationAccounts: (typeof oAuth2AuthenticationAccounts.$inferSelect)[]
+			oAuth2AuthorizationAccounts: (typeof oAuth2AuthorizationAccounts.$inferSelect)[]
+		} & TUser
+	}
