@@ -652,5 +652,3 @@ export function createAuth<
 		}
 	}
 }
-
-export { ClientAuthProvider } from './client'
