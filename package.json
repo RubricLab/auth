@@ -1,38 +1,34 @@
 {
-  "scripts": {
-    "generate": "bun scripts/generate.ts",
-    "watch": "bun scripts/watch.ts",
-    "prepare": "bun x simple-git-hooks",
-    "bleed": "bun x npm-check-updates -u",
-    "clean": "rm -rf .next && rm -rf node_modules",
-    "format": "bun x biome format --write .",
-    "lint": "bun x biome check . && bun x biome lint .",
-    "lint:fix": "bun x biome check --fix --unsafe . && bun x biome lint --write --unsafe ."
-  },
-  "name": "@rubriclab/auth",
-  "version": "0.0.45",
-  "main": "lib/index.ts",
-  "dependencies": {
-    "@rubriclab/config": "*",
-    "@rubriclab/package": "*",
-    "react": "19.1.0",
-    "resend": "^4.1.2"
-  },
-  "devDependencies": {
-    "@types/react": "19.1.0"
-  },
-  "peerDependencies": {
-    "next": "^15.1.6"
-  },
-  "simple-git-hooks": {
-    "post-commit": "bun run rubriclab-postcommit"
-  },
-  "publishConfig": {
-    "access": "public"
-  },
-  "exports": {
-    ".": "./lib/index.ts",
-    "./client": "./lib/client.tsx",
-    "./providers/*": "./lib/providers/*.ts"
-  }
+	"scripts": {
+		"generate": "bun scripts/generate.ts",
+		"watch": "bun scripts/watch.ts",
+		"prepare": "bun x simple-git-hooks",
+		"bleed": "bun x npm-check-updates -u",
+		"clean": "rm -rf .next && rm -rf node_modules",
+		"format": "bun x biome format --write .",
+		"lint": "bun x biome check . && bun x biome lint .",
+		"lint:fix": "bun x biome check --fix --unsafe . && bun x biome lint --write --unsafe ."
+	},
+	"name": "@rubriclab/auth",
+	"version": "0.0.45",
+	"main": "lib/index.ts",
+	"dependencies": {
+		"@rubriclab/config": "*",
+		"@rubriclab/package": "*",
+		"resend": "^4.1.2"
+	},
+	"peerDependencies": {
+		"next": "^15.1.6"
+	},
+	"simple-git-hooks": {
+		"post-commit": "bun run rubriclab-postcommit"
+	},
+	"publishConfig": {
+		"access": "public"
+	},
+	"exports": {
+		".": "./lib/index.ts",
+		"./client": "./lib/client.tsx",
+		"./providers/*": "./lib/providers/*.ts"
+	}
 }
