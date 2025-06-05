@@ -2,7 +2,7 @@
 	"scripts": {
 		"generate": "bun scripts/generate.ts",
 		"watch": "bun scripts/watch.ts",
-		"prepare": "bun x simple-git-hooks",
+		"prepare": "bun x @rubriclab/package prepare",
 		"bleed": "bun x npm-check-updates -u",
 		"clean": "rm -rf .next && rm -rf node_modules",
 		"format": "bun x biome format --write .",
@@ -19,7 +19,7 @@
 		"resend": "latest"
 	},
 	"simple-git-hooks": {
-		"post-commit": "bun run rubriclab-postcommit"
+		"post-commit": "bun x @rubriclab/package post-commit"
 	},
 	"publishConfig": {
 		"access": "public"
