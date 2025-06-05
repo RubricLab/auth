@@ -17,9 +17,6 @@
 		"@rubriclab/package": "*",
 		"resend": "^4.1.2"
 	},
-	"peerDependencies": {
-		"next": "^15.1.6"
-	},
 	"simple-git-hooks": {
 		"post-commit": "bun run rubriclab-postcommit"
 	},
