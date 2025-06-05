@@ -411,10 +411,10 @@ export function createAuth<
 				redirect(url.toString())
 			},
 
-			async signOut() {
+			async signOut(args?: { redirect: string }) {
 				const cookies = await nextCookies()
 				cookies.delete('session')
-				redirect('/')
+				redirect(args?.redirect || '/')
 			},
 
 			async sendMagicLink({
@@ -473,19 +473,21 @@ export function createAuth<
 				})
 			},
 
-			async getSession() {
+			async getSession({ redirectUnauthorized }: { redirectUnauthorized: string }) {
 				const cookies = await nextCookies()
 				const sessionCookie = cookies.get('session')
 				if (!sessionCookie) {
-					return null
+					redirect(redirectUnauthorized)
 				}
 
 				const session = await databaseProvider.getSession({ key: sessionCookie.value })
-				if (!session) return null
+				if (!session) {
+					redirect(redirectUnauthorized)
+				}
 
 				if (session.expiresAt < new Date()) {
 					cookies.delete('session')
-					return null
+					redirect(redirectUnauthorized)
 				}
 
 				const refreshedOauth2AuthenticationAccounts = await Promise.all(
@@ -533,7 +535,7 @@ export function createAuth<
 							accountId: account.accountId
 						}))
 					}
-				} as Awaited<ReturnType<DatabaseProvider['getSession']>>
+				} as NonNullable<Awaited<ReturnType<DatabaseProvider['getSession']>>>
 			},
 
 			async connectOAuth2AuthorizationAccount({
@@ -650,5 +652,3 @@ export function createAuth<
 		}
 	}
 }
-
-export { ClientAuthProvider } from './client'

@@ -1,5 +1,5 @@
 import { and, eq } from 'drizzle-orm'
-import type { NeonHttpDatabase } from 'drizzle-orm/neon-http'
+import type { NeonDatabase } from 'drizzle-orm/neon-serverless'
 import { pgTable, primaryKey, timestamp, uuid, varchar } from 'drizzle-orm/pg-core'
 import type { Account, DatabaseProvider as GenericDatabaseProvider } from '../types'
 
@@ -16,7 +16,9 @@ const oAuth2AuthenticationRequests = pgTable('oauth2_authentication_requests', {
 
 const oAuth2AuthorizationRequests = pgTable('oauth2_authorization_requests', {
 	token: varchar('token', { length: 255 }).primaryKey(),
-	userId: varchar('user_id', { length: 36 }).notNull(),
+	userId: uuid('user_id')
+		.notNull()
+		.references(() => users.id, { onDelete: 'cascade' }),
 	callbackUrl: varchar('callback_url', { length: 255 }).notNull(),
 	expiresAt: timestamp('expires_at', { mode: 'date' }).notNull()
 })
@@ -30,7 +32,7 @@ const magicLinkRequests = pgTable('magic_link_requests', {
 const oAuth2AuthenticationAccounts = pgTable(
 	'oauth2_authentication_accounts',
 	{
-		userId: varchar('user_id', { length: 36 })
+		userId: uuid('user_id')
 			.notNull()
 			.references(() => users.id, { onDelete: 'cascade' }),
 		provider: varchar('provider', { length: 255 }).notNull(),
@@ -45,7 +47,7 @@ const oAuth2AuthenticationAccounts = pgTable(
 const oAuth2AuthorizationAccounts = pgTable(
 	'oauth2_authorization_accounts',
 	{
-		userId: varchar('user_id', { length: 36 })
+		userId: uuid('user_id')
 			.notNull()
 			.references(() => users.id, { onDelete: 'cascade' }),
 		provider: varchar('provider', { length: 255 }).notNull(),
@@ -60,7 +62,7 @@ const oAuth2AuthorizationAccounts = pgTable(
 const apiKeyAuthorizationAccounts = pgTable(
 	'api_key_authorization_accounts',
 	{
-		userId: varchar('user_id', { length: 36 })
+		userId: uuid('user_id')
 			.notNull()
 			.references(() => users.id, { onDelete: 'cascade' }),
 		provider: varchar('provider', { length: 255 }).notNull(),
@@ -72,14 +74,14 @@ const apiKeyAuthorizationAccounts = pgTable(
 
 const sessions = pgTable('sessions', {
 	key: varchar('key', { length: 255 }).primaryKey(),
-	userId: varchar('user_id', { length: 36 })
+	userId: uuid('user_id')
 		.notNull()
 		.references(() => users.id, { onDelete: 'cascade' }),
 	expiresAt: timestamp('expires_at', { mode: 'date' }).notNull()
 })
 
 export function drizzleAdapter<TUser extends typeof users>(
-	db: NeonHttpDatabase<{
+	db: NeonDatabase<{
 		apiKeyAuthorizationAccounts: typeof apiKeyAuthorizationAccounts
 		magicLinkRequests: typeof magicLinkRequests
 		oAuth2AuthenticationAccounts: typeof oAuth2AuthenticationAccounts
@@ -179,6 +181,7 @@ export function drizzleAdapter<TUser extends typeof users>(
 					.where(eq(oAuth2AuthorizationAccounts.userId, session.userId))
 
 				return {
+					...userRecord,
 					apiKeyAuthorizationAccounts: apiKeyAccounts,
 					oAuth2AuthenticationAccounts: oAuth2AuthAccounts,
 					oAuth2AuthorizationAccounts: oAuth2AuthzAccounts
@@ -402,3 +405,12 @@ export function drizzleAdapter<TUser extends typeof users>(
 		}
 	} satisfies GenericDatabaseProvider
 }
+
+export type DrizzleSession<TUser extends typeof users.$inferSelect> =
+	typeof sessions.$inferSelect & {
+		user: {
+			apiKeyAuthorizationAccounts: (typeof apiKeyAuthorizationAccounts.$inferSelect)[]
+			oAuth2AuthenticationAccounts: (typeof oAuth2AuthenticationAccounts.$inferSelect)[]
+			oAuth2AuthorizationAccounts: (typeof oAuth2AuthorizationAccounts.$inferSelect)[]
+		} & TUser
+	}

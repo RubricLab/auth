@@ -1,3 +1,7 @@
+- [2025-05-24] [userRecord from drizzle adapter](https://github.com/RubricLab/auth/commit/9c00cb6fd32ed0f50ff2e68de422c088c2770b62)
+- [2025-05-24] [client factory for correct generic session, client<>server partition](https://github.com/RubricLab/auth/commit/490266815969e139b194bcffb49ca2a6eb4e5f1f)
+- [2025-05-21] [required session or redirect, sign out redirect](https://github.com/RubricLab/auth/commit/79b99754578d3b1d91f9aa3645c48d8ec2653eb1)
+- [2025-05-21] [fixes to drizzle provider, react version issues](https://github.com/RubricLab/auth/commit/934c116abc3ea67069b02de535d660a09234c1d7)
 - [2025-04-16] [drizzle adapter](https://github.com/RubricLab/auth/commit/c9c33c5bee6c0faf7ca343967988ee9139ca5a11)
 - [2025-04-15] [Revert export of generic](https://github.com/RubricLab/auth/commit/2e2f194aaba2989e4587e308ab4ce1664507dfee)
 - [2025-04-15] [Add tsconfig.json; export types and functions from index.ts](https://github.com/RubricLab/auth/commit/f55dbe15af79d7879761edbb1feaa823a914e46a)
