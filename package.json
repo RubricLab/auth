@@ -1,29 +1,29 @@
 {
-	"scripts": {
-		"generate": "bun scripts/generate.ts",
-		"watch": "bun scripts/watch.ts",
-		"prepare": "bun x @rubriclab/package prepare",
-		"bleed": "bun x npm-check-updates -u",
-		"clean": "rm -rf .next && rm -rf node_modules",
-		"format": "bun x biome check . --write"
-	},
-	"name": "@rubriclab/auth",
-	"version": "0.0.46",
-	"main": "lib/index.ts",
 	"dependencies": {
 		"@rubriclab/config": "*",
 		"@rubriclab/package": "*",
 		"resend": "^4.1.2"
 	},
-	"simple-git-hooks": {
-		"post-commit": "bun x @rubriclab/package post-commit"
-	},
-	"publishConfig": {
-		"access": "public"
-	},
 	"exports": {
 		".": "./lib/index.ts",
 		"./client": "./lib/client.tsx",
 		"./providers/*": "./lib/providers/*.ts"
-	}
+	},
+	"main": "lib/index.ts",
+	"name": "@rubriclab/auth",
+	"publishConfig": {
+		"access": "public"
+	},
+	"scripts": {
+		"bleed": "bun x npm-check-updates -u",
+		"clean": "rm -rf .next && rm -rf node_modules",
+		"format": "bun x biome check . --write",
+		"generate": "bun scripts/generate.ts",
+		"prepare": "bun x @rubriclab/package prepare",
+		"watch": "bun scripts/watch.ts"
+	},
+	"simple-git-hooks": {
+		"post-commit": "bun x @rubriclab/package post-commit"
+	},
+	"version": "0.0.47"
 }

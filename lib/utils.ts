@@ -3,8 +3,8 @@ import { redirect } from 'next/navigation'
 
 import type {
 	ApiKeyAuthorizationProvider,
-	AuthUrl,
 	AuthorizationProvider,
+	AuthUrl,
 	DatabaseProvider as GenericDatabaseProvider,
 	MagicLinkAuthenticationProvider,
 	Oauth2AuthenticationProvider,
@@ -34,10 +34,10 @@ export function createOauth2AuthenticationProvider({
 	}>
 }): Oauth2AuthenticationProvider {
 	return {
-		method: 'oauth2',
 		getAuthenticationUrl,
 		getToken,
 		getUser,
+		method: 'oauth2',
 		refreshToken
 	}
 }
@@ -48,10 +48,7 @@ export function createOauth2AuthorizationProvider({
 	getUser,
 	refreshToken
 }: {
-	getAuthorizationUrl: (options: {
-		redirectUri: string
-		state: string
-	}) => Promise<URL>
+	getAuthorizationUrl: (options: { redirectUri: string; state: string }) => Promise<URL>
 	getToken: (options: { code: string; redirectUri: string }) => Promise<{
 		accessToken: string
 		refreshToken: string
@@ -68,10 +65,10 @@ export function createOauth2AuthorizationProvider({
 	}>
 }): Oauth2AuthorizationProvider {
 	return {
-		method: 'oauth2',
 		getAuthorizationUrl,
 		getToken,
 		getUser,
+		method: 'oauth2',
 		refreshToken
 	}
 }
@@ -97,9 +94,9 @@ export function createApiKeyAuthorizationProvider({
 	}>
 }): ApiKeyAuthorizationProvider {
 	return {
-		method: 'apikey',
 		apiKeyUrl,
-		getUser
+		getUser,
+		method: 'apikey'
 	}
 }
 export function createAuth<
@@ -133,8 +130,8 @@ export function createAuth<
 		userId: string
 	}) {
 		const account = await databaseProvider.getOAuth2AuthenticationAccount({
-			provider: String(provider),
 			accountId,
+			provider: String(provider),
 			userId
 		})
 
@@ -159,18 +156,18 @@ export function createAuth<
 			})
 
 			return await databaseProvider.updateOAuth2AuthenticationAccount({
-				userId: account.userId,
-				provider: account.provider,
-				accountId: account.accountId,
 				accessToken,
+				accountId: account.accountId,
+				expiresAt,
+				provider: account.provider,
 				refreshToken: newRefreshToken || account.refreshToken,
-				expiresAt
+				userId: account.userId
 			})
 		} catch (error) {
 			await databaseProvider.deleteOAuth2AuthenticationAccount({
-				userId: account.userId,
+				accountId: account.accountId,
 				provider: account.provider,
-				accountId: account.accountId
+				userId: account.userId
 			})
 
 			throw error
@@ -187,8 +184,8 @@ export function createAuth<
 		userId: string
 	}) {
 		const account = await databaseProvider.getOAuth2AuthorizationAccount({
-			provider: String(provider),
 			accountId,
+			provider: String(provider),
 			userId
 		})
 
@@ -209,17 +206,17 @@ export function createAuth<
 			})
 
 			return await databaseProvider.updateOAuth2AuthorizationAccount({
-				userId: account.userId,
-				provider: account.provider,
-				accountId: account.accountId,
 				accessToken,
+				accountId: account.accountId,
+				expiresAt,
+				provider: account.provider,
 				refreshToken: refreshToken || account.refreshToken,
-				expiresAt
+				userId: account.userId
 			})
 		} catch (error) {
 			await databaseProvider.deleteOAuth2AuthorizationAccount({
-				provider: account.provider,
 				accountId: account.accountId,
+				provider: account.provider,
 				userId: account.userId
 			})
 
@@ -228,6 +225,272 @@ export function createAuth<
 	}
 
 	return {
+		__types: {
+			TOAuth2AuthorizationProviders: undefined as unknown as keyof OAuth2AuthorizationProviders,
+			TSession: undefined as unknown as NonNullable<
+				Awaited<ReturnType<DatabaseProvider['getSession']>>
+			>,
+			TUser: undefined as unknown as NonNullable<
+				Awaited<ReturnType<DatabaseProvider['getSession']>>
+			>['user']
+		},
+		actions: {
+			async connectOAuth2AuthorizationAccount({
+				provider,
+				callbackUrl,
+				userId
+			}: {
+				provider: keyof OAuth2AuthorizationProviders
+				callbackUrl: string
+				userId: string
+			}) {
+				if (!oAuth2AuthorizationProviders || !oAuth2AuthorizationProviders[provider]) {
+					throw new Error(`Authorization provider ${String(provider)} not found`)
+				}
+
+				const state = crypto.randomUUID()
+
+				await databaseProvider.createOAuth2AuthorizationRequest({
+					callbackUrl,
+					expiresAt: new Date(Date.now() + 1000 * 60 * 60 * 24),
+					token: state,
+					userId
+				})
+
+				const redirectUri = `${authUrl}/auth/authorization/${String(provider)}`
+
+				const url = await oAuth2AuthorizationProviders[provider].getAuthorizationUrl({
+					redirectUri,
+					state
+				})
+				redirect(url.toString())
+			},
+			async disconnectApiKeyAuthorizationAccount({
+				provider,
+				accountId,
+				userId
+			}: {
+				provider: keyof ApiKeyAuthorizationProviders
+				accountId: string
+				userId: string
+			}) {
+				if (!apiKeyAuthorizationProviders || !apiKeyAuthorizationProviders[provider]) {
+					throw new Error(`AccessToken provider ${String(provider)} not found`)
+				}
+
+				await databaseProvider.deleteApiKeyAuthorizationAccount({
+					accountId,
+					provider: String(provider),
+					userId
+				})
+			},
+			async disconnectOAuth2AuthorizationAccount({
+				provider,
+				accountId,
+				userId
+			}: {
+				provider: keyof OAuth2AuthorizationProviders
+				accountId: string
+				userId: string
+			}) {
+				if (!oAuth2AuthorizationProviders || !oAuth2AuthorizationProviders[provider]) {
+					throw new Error(`Authorization provider ${String(provider)} not found`)
+				}
+
+				await databaseProvider.deleteOAuth2AuthorizationAccount({
+					accountId,
+					provider: String(provider),
+					userId
+				})
+			},
+			async getAuthConstants() {
+				return {
+					...(Object.fromEntries(
+						Object.entries(apiKeyAuthorizationProviders ?? {}).map(([provider, { apiKeyUrl }]) => [
+							`${String(provider).toUpperCase()}_API_KEY_CONFIG_URL`,
+							apiKeyUrl
+						])
+					) as {
+						[K in keyof ApiKeyAuthorizationProviders as `${Uppercase<string & K>}_API_KEY_CONFIG_URL`]: string
+					})
+				}
+			},
+
+			async getSession({ redirectUnauthorized }: { redirectUnauthorized: string }) {
+				const cookies = await nextCookies()
+				const sessionCookie = cookies.get('session')
+				if (!sessionCookie) {
+					redirect(redirectUnauthorized)
+				}
+
+				const session = await databaseProvider.getSession({ key: sessionCookie.value })
+				if (!session) {
+					redirect(redirectUnauthorized)
+				}
+
+				if (session.expiresAt < new Date()) {
+					cookies.delete('session')
+					redirect(redirectUnauthorized)
+				}
+
+				const refreshedOauth2AuthenticationAccounts = await Promise.all(
+					session.user.oAuth2AuthenticationAccounts.map(async account => {
+						if (account.expiresAt < new Date()) {
+							const refreshedAccount = await refreshOauth2AuthenticationToken({
+								accountId: account.accountId,
+								provider: account.provider,
+								userId: session.userId
+							})
+
+							return refreshedAccount
+						}
+
+						return account
+					})
+				)
+
+				const refreshedOauth2AuthorizationAccounts = await Promise.all(
+					session.user.oAuth2AuthorizationAccounts.map(async account => {
+						if (account.expiresAt < new Date()) {
+							const refreshedAccount = await refreshOauth2AuthorizationToken({
+								accountId: account.accountId,
+								provider: account.provider,
+								userId: session.userId
+							})
+
+							return refreshedAccount
+						}
+
+						return account
+					})
+				)
+
+				return {
+					...session,
+					user: {
+						...session.user,
+						oAuth2AuthenticationAccounts: refreshedOauth2AuthenticationAccounts.map(account => ({
+							accountId: account.accountId,
+							provider: account.provider
+						})),
+						oAuth2AuthorizationAccounts: refreshedOauth2AuthorizationAccounts.map(account => ({
+							accountId: account.accountId,
+							provider: account.provider
+						}))
+					}
+				} as NonNullable<Awaited<ReturnType<DatabaseProvider['getSession']>>>
+			},
+
+			async refreshOauth2AuthenticationToken({
+				provider,
+				accountId,
+				userId
+			}: {
+				provider: keyof OAuth2AuthenticationProviders
+				accountId: string
+				userId: string
+			}) {
+				await refreshOauth2AuthenticationToken({
+					accountId,
+					provider,
+					userId
+				})
+			},
+			async refreshOauth2AuthorizationToken({
+				provider,
+				accountId,
+				userId
+			}: {
+				provider: keyof OAuth2AuthorizationProviders
+				accountId: string
+				userId: string
+			}) {
+				await refreshOauth2AuthorizationToken({
+					accountId,
+					provider,
+					userId
+				})
+			},
+			async saveAuthorizationAccessToken({
+				provider,
+				userId,
+				apiKey
+			}: {
+				provider: keyof ApiKeyAuthorizationProviders
+				userId: string
+				apiKey: string
+			}) {
+				if (!apiKeyAuthorizationProviders || !apiKeyAuthorizationProviders[provider]) {
+					throw new Error(`AccessToken provider ${String(provider)} not found`)
+				}
+
+				const { accountId } = await apiKeyAuthorizationProviders[provider].getUser({ apiKey })
+
+				await databaseProvider.createApiKeyAuthorizationAccount({
+					accountId,
+					apiKey,
+					provider: String(provider),
+					userId
+				})
+			},
+
+			async sendMagicLink({
+				provider,
+				email
+			}: {
+				provider: keyof MagicLinkAuthenticationProviders
+				email: string
+			}) {
+				if (!magicLinkAuthenticationProviders || !magicLinkAuthenticationProviders[provider]) {
+					throw new Error(`MagicLink provider ${String(provider)} not found`)
+				}
+
+				const { token } = await databaseProvider.createMagicLinkRequest({
+					email,
+					expiresAt: new Date(Date.now() + 1000 * 60 * 60 * 24),
+					token: crypto.randomUUID()
+				})
+
+				await magicLinkAuthenticationProviders[provider].sendEmail({
+					email,
+					url: `${authUrl}/auth/authentication/magiclink/${String(provider)}?token=${token}`
+				})
+
+				return
+			},
+			async signIn({
+				provider,
+				callbackUrl
+			}: {
+				provider: keyof OAuth2AuthenticationProviders
+				callbackUrl: string
+			}) {
+				if (!oAuth2AuthenticationProviders || !oAuth2AuthenticationProviders[provider]) {
+					throw new Error(`OAuth2 provider ${String(provider)} not found`)
+				}
+
+				const state = crypto.randomUUID()
+				await databaseProvider.createOAuth2AuthenticationRequest({
+					callbackUrl,
+					expiresAt: new Date(Date.now() + 1000 * 60 * 60 * 24),
+					token: state
+				})
+
+				const redirectUri = `${authUrl}/auth/authentication/${String(provider)}`
+
+				const url = await oAuth2AuthenticationProviders[provider].getAuthenticationUrl({
+					redirectUri,
+					state
+				})
+				redirect(url.toString())
+			},
+
+			async signOut(args?: { redirect: string }) {
+				const cookies = await nextCookies()
+				cookies.delete('session')
+				redirect(args?.redirect || '/')
+			}
+		},
 		routes: {
 			async GET(
 				request: Request,
@@ -301,18 +564,18 @@ export function createAuth<
 								if (!user) {
 									user = await databaseProvider.createUser({ email })
 									await databaseProvider.createOAuth2AuthenticationAccount({
-										userId: user.id,
-										provider: String(provider),
-										accountId,
 										accessToken,
+										accountId,
+										expiresAt,
+										provider: String(provider),
 										refreshToken,
-										expiresAt
+										userId: user.id
 									})
 								}
 
 								const session = await databaseProvider.createSession({
-									userId: user.id,
-									expiresAt: new Date(Date.now() + 1000 * 60 * 60 * 24 * 30)
+									expiresAt: new Date(Date.now() + 1000 * 60 * 60 * 24 * 30),
+									userId: user.id
 								})
 
 								const cookies = await nextCookies()
@@ -366,12 +629,12 @@ export function createAuth<
 								}
 
 								await databaseProvider.createOAuth2AuthorizationAccount({
-									userId,
-									provider: String(provider),
-									accountId,
 									accessToken,
+									accountId,
+									expiresAt,
+									provider: String(provider),
 									refreshToken,
-									expiresAt
+									userId
 								})
 
 								return redirect(callbackUrl)
@@ -382,273 +645,6 @@ export function createAuth<
 				}
 				return new Response('Invalid method', { status: 400 })
 			}
-		},
-		actions: {
-			async signIn({
-				provider,
-				callbackUrl
-			}: {
-				provider: keyof OAuth2AuthenticationProviders
-				callbackUrl: string
-			}) {
-				if (!oAuth2AuthenticationProviders || !oAuth2AuthenticationProviders[provider]) {
-					throw new Error(`OAuth2 provider ${String(provider)} not found`)
-				}
-
-				const state = crypto.randomUUID()
-				await databaseProvider.createOAuth2AuthenticationRequest({
-					token: state,
-					callbackUrl,
-					expiresAt: new Date(Date.now() + 1000 * 60 * 60 * 24)
-				})
-
-				const redirectUri = `${authUrl}/auth/authentication/${String(provider)}`
-
-				const url = await oAuth2AuthenticationProviders[provider].getAuthenticationUrl({
-					redirectUri,
-					state
-				})
-				redirect(url.toString())
-			},
-
-			async signOut(args?: { redirect: string }) {
-				const cookies = await nextCookies()
-				cookies.delete('session')
-				redirect(args?.redirect || '/')
-			},
-
-			async sendMagicLink({
-				provider,
-				email
-			}: {
-				provider: keyof MagicLinkAuthenticationProviders
-				email: string
-			}) {
-				if (!magicLinkAuthenticationProviders || !magicLinkAuthenticationProviders[provider]) {
-					throw new Error(`MagicLink provider ${String(provider)} not found`)
-				}
-
-				const { token } = await databaseProvider.createMagicLinkRequest({
-					token: crypto.randomUUID(),
-					email,
-					expiresAt: new Date(Date.now() + 1000 * 60 * 60 * 24)
-				})
-
-				await magicLinkAuthenticationProviders[provider].sendEmail({
-					email,
-					url: `${authUrl}/auth/authentication/magiclink/${String(provider)}?token=${token}`
-				})
-
-				return
-			},
-
-			async refreshOauth2AuthenticationToken({
-				provider,
-				accountId,
-				userId
-			}: {
-				provider: keyof OAuth2AuthenticationProviders
-				accountId: string
-				userId: string
-			}) {
-				await refreshOauth2AuthenticationToken({
-					provider,
-					accountId,
-					userId
-				})
-			},
-			async refreshOauth2AuthorizationToken({
-				provider,
-				accountId,
-				userId
-			}: {
-				provider: keyof OAuth2AuthorizationProviders
-				accountId: string
-				userId: string
-			}) {
-				await refreshOauth2AuthorizationToken({
-					provider,
-					accountId,
-					userId
-				})
-			},
-
-			async getSession({ redirectUnauthorized }: { redirectUnauthorized: string }) {
-				const cookies = await nextCookies()
-				const sessionCookie = cookies.get('session')
-				if (!sessionCookie) {
-					redirect(redirectUnauthorized)
-				}
-
-				const session = await databaseProvider.getSession({ key: sessionCookie.value })
-				if (!session) {
-					redirect(redirectUnauthorized)
-				}
-
-				if (session.expiresAt < new Date()) {
-					cookies.delete('session')
-					redirect(redirectUnauthorized)
-				}
-
-				const refreshedOauth2AuthenticationAccounts = await Promise.all(
-					session.user.oAuth2AuthenticationAccounts.map(async account => {
-						if (account.expiresAt < new Date()) {
-							const refreshedAccount = await refreshOauth2AuthenticationToken({
-								provider: account.provider,
-								accountId: account.accountId,
-								userId: session.userId
-							})
-
-							return refreshedAccount
-						}
-
-						return account
-					})
-				)
-
-				const refreshedOauth2AuthorizationAccounts = await Promise.all(
-					session.user.oAuth2AuthorizationAccounts.map(async account => {
-						if (account.expiresAt < new Date()) {
-							const refreshedAccount = await refreshOauth2AuthorizationToken({
-								provider: account.provider,
-								accountId: account.accountId,
-								userId: session.userId
-							})
-
-							return refreshedAccount
-						}
-
-						return account
-					})
-				)
-
-				return {
-					...session,
-					user: {
-						...session.user,
-						oAuth2AuthenticationAccounts: refreshedOauth2AuthenticationAccounts.map(account => ({
-							provider: account.provider,
-							accountId: account.accountId
-						})),
-						oAuth2AuthorizationAccounts: refreshedOauth2AuthorizationAccounts.map(account => ({
-							provider: account.provider,
-							accountId: account.accountId
-						}))
-					}
-				} as NonNullable<Awaited<ReturnType<DatabaseProvider['getSession']>>>
-			},
-
-			async connectOAuth2AuthorizationAccount({
-				provider,
-				callbackUrl,
-				userId
-			}: {
-				provider: keyof OAuth2AuthorizationProviders
-				callbackUrl: string
-				userId: string
-			}) {
-				if (!oAuth2AuthorizationProviders || !oAuth2AuthorizationProviders[provider]) {
-					throw new Error(`Authorization provider ${String(provider)} not found`)
-				}
-
-				const state = crypto.randomUUID()
-
-				await databaseProvider.createOAuth2AuthorizationRequest({
-					token: state,
-					userId,
-					callbackUrl,
-					expiresAt: new Date(Date.now() + 1000 * 60 * 60 * 24)
-				})
-
-				const redirectUri = `${authUrl}/auth/authorization/${String(provider)}`
-
-				const url = await oAuth2AuthorizationProviders[provider].getAuthorizationUrl({
-					redirectUri,
-					state
-				})
-				redirect(url.toString())
-			},
-			async disconnectOAuth2AuthorizationAccount({
-				provider,
-				accountId,
-				userId
-			}: {
-				provider: keyof OAuth2AuthorizationProviders
-				accountId: string
-				userId: string
-			}) {
-				if (!oAuth2AuthorizationProviders || !oAuth2AuthorizationProviders[provider]) {
-					throw new Error(`Authorization provider ${String(provider)} not found`)
-				}
-
-				await databaseProvider.deleteOAuth2AuthorizationAccount({
-					provider: String(provider),
-					accountId,
-					userId
-				})
-			},
-			async saveAuthorizationAccessToken({
-				provider,
-				userId,
-				apiKey
-			}: {
-				provider: keyof ApiKeyAuthorizationProviders
-				userId: string
-				apiKey: string
-			}) {
-				if (!apiKeyAuthorizationProviders || !apiKeyAuthorizationProviders[provider]) {
-					throw new Error(`AccessToken provider ${String(provider)} not found`)
-				}
-
-				const { accountId } = await apiKeyAuthorizationProviders[provider].getUser({ apiKey })
-
-				await databaseProvider.createApiKeyAuthorizationAccount({
-					userId,
-					provider: String(provider),
-					accountId,
-					apiKey
-				})
-			},
-			async disconnectApiKeyAuthorizationAccount({
-				provider,
-				accountId,
-				userId
-			}: {
-				provider: keyof ApiKeyAuthorizationProviders
-				accountId: string
-				userId: string
-			}) {
-				if (!apiKeyAuthorizationProviders || !apiKeyAuthorizationProviders[provider]) {
-					throw new Error(`AccessToken provider ${String(provider)} not found`)
-				}
-
-				await databaseProvider.deleteApiKeyAuthorizationAccount({
-					provider: String(provider),
-					accountId,
-					userId
-				})
-			},
-			async getAuthConstants() {
-				return {
-					...(Object.fromEntries(
-						Object.entries(apiKeyAuthorizationProviders ?? {}).map(([provider, { apiKeyUrl }]) => [
-							`${String(provider).toUpperCase()}_API_KEY_CONFIG_URL`,
-							apiKeyUrl
-						])
-					) as {
-						[K in keyof ApiKeyAuthorizationProviders as `${Uppercase<string & K>}_API_KEY_CONFIG_URL`]: string
-					})
-				}
-			}
-		},
-		__types: {
-			TUser: undefined as unknown as NonNullable<
-				Awaited<ReturnType<DatabaseProvider['getSession']>>
-			>['user'],
-			TOAuth2AuthorizationProviders: undefined as unknown as keyof OAuth2AuthorizationProviders,
-			TSession: undefined as unknown as NonNullable<
-				Awaited<ReturnType<DatabaseProvider['getSession']>>
-			>
 		}
 	}
 }

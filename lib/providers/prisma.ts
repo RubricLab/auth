@@ -1,4 +1,5 @@
 import type { DatabaseProvider as GenericDatabaseProvider } from '../types'
+
 type OAuth2Request = {
 	token: string
 	callbackUrl: string
@@ -133,56 +134,39 @@ export function prismaAdapter<TUser extends GenericUser>(db: {
 	}
 }) {
 	return {
-		createOAuth2AuthenticationRequest: (data: OAuth2Request) =>
-			db.oAuth2AuthenticationRequest.create({ data }),
-		createOAuth2AuthorizationRequest: (data: OAuth2AuthorizationRequest) =>
-			db.oAuth2AuthorizationRequest.create({ data }),
-		getOAuth2AuthenticationRequest: (data: { token: string }) =>
-			db.oAuth2AuthenticationRequest.findUniqueOrThrow({ where: { token: data.token } }),
-		getOAuth2AuthorizationRequest: (data: { token: string }) =>
-			db.oAuth2AuthorizationRequest.findUniqueOrThrow({ where: { token: data.token } }),
+		createApiKeyAuthorizationAccount: (data: {
+			userId: string
+			provider: string
+			accountId: string
+			apiKey: string
+		}) => db.apiKeyAuthorizationAccount.create({ data }),
+		createMagicLinkRequest: (data: MagicLinkRequest) => db.magicLinkRequest.create({ data }),
 		createOAuth2AuthenticationAccount: (data: OAuth2Account) =>
 			db.oAuth2AuthenticationAccount.create({ data }),
-		createMagicLinkRequest: (data: MagicLinkRequest) => db.magicLinkRequest.create({ data }),
-		getUser: (data: { email: string }) => db.user.findUnique({ where: { email: data.email } }),
+		createOAuth2AuthenticationRequest: (data: OAuth2Request) =>
+			db.oAuth2AuthenticationRequest.create({ data }),
+		createOAuth2AuthorizationAccount: (data: OAuth2Account) =>
+			db.oAuth2AuthorizationAccount.create({ data }),
+		createOAuth2AuthorizationRequest: (data: OAuth2AuthorizationRequest) =>
+			db.oAuth2AuthorizationRequest.create({ data }),
+		createSession: (data: { userId: string; expiresAt: Date }) => db.session.create({ data }),
 		createUser: (data: { email: string }) => {
 			const { email } = data
 			return db.user.create({ data: { email } })
 		},
-		createSession: (data: { userId: string; expiresAt: Date }) => db.session.create({ data }),
-		getSession: (data: { key: string }) =>
-			db.session.findUnique({
-				where: { key: data.key },
-				include: {
-					user: {
-						include: {
-							oAuth2AuthenticationAccounts: true,
-							oAuth2AuthorizationAccounts: true,
-							apiKeyAuthorizationAccounts: true
-						}
-					}
-				}
-			}) as Promise<(Session & { user: TUser }) | null>,
-		getOAuth2AuthenticationAccount: (data: { userId: string; provider: string; accountId: string }) =>
-			db.oAuth2AuthenticationAccount.findUniqueOrThrow({
+		deleteApiKeyAuthorizationAccount: (data: {
+			userId: string
+			provider: string
+			accountId: string
+		}) =>
+			db.apiKeyAuthorizationAccount.delete({
 				where: {
 					userId_provider_accountId: {
-						userId: data.userId,
+						accountId: data.accountId,
 						provider: data.provider,
-						accountId: data.accountId
+						userId: data.userId
 					}
 				}
-			}),
-		updateOAuth2AuthenticationAccount: (data: OAuth2Account) =>
-			db.oAuth2AuthenticationAccount.update({
-				where: {
-					userId_provider_accountId: {
-						userId: data.userId,
-						provider: data.provider,
-						accountId: data.accountId
-					}
-				},
-				data
 			}),
 		deleteOAuth2AuthenticationAccount: (data: {
 			userId: string
@@ -192,24 +176,12 @@ export function prismaAdapter<TUser extends GenericUser>(db: {
 			db.oAuth2AuthenticationAccount.delete({
 				where: {
 					userId_provider_accountId: {
-						userId: data.userId,
+						accountId: data.accountId,
 						provider: data.provider,
-						accountId: data.accountId
+						userId: data.userId
 					}
 				}
 			}),
-		getOAuth2AuthorizationAccount: (data: { userId: string; provider: string; accountId: string }) =>
-			db.oAuth2AuthorizationAccount.findUniqueOrThrow({
-				where: {
-					userId_provider_accountId: {
-						userId: data.userId,
-						provider: data.provider,
-						accountId: data.accountId
-					}
-				}
-			}),
-		createOAuth2AuthorizationAccount: (data: OAuth2Account) =>
-			db.oAuth2AuthorizationAccount.create({ data }),
 		deleteOAuth2AuthorizationAccount: (data: {
 			userId: string
 			provider: string
@@ -218,40 +190,69 @@ export function prismaAdapter<TUser extends GenericUser>(db: {
 			db.oAuth2AuthorizationAccount.delete({
 				where: {
 					userId_provider_accountId: {
-						userId: data.userId,
+						accountId: data.accountId,
 						provider: data.provider,
-						accountId: data.accountId
+						userId: data.userId
+					}
+				}
+			}),
+		getOAuth2AuthenticationAccount: (data: { userId: string; provider: string; accountId: string }) =>
+			db.oAuth2AuthenticationAccount.findUniqueOrThrow({
+				where: {
+					userId_provider_accountId: {
+						accountId: data.accountId,
+						provider: data.provider,
+						userId: data.userId
+					}
+				}
+			}),
+		getOAuth2AuthenticationRequest: (data: { token: string }) =>
+			db.oAuth2AuthenticationRequest.findUniqueOrThrow({ where: { token: data.token } }),
+		getOAuth2AuthorizationAccount: (data: { userId: string; provider: string; accountId: string }) =>
+			db.oAuth2AuthorizationAccount.findUniqueOrThrow({
+				where: {
+					userId_provider_accountId: {
+						accountId: data.accountId,
+						provider: data.provider,
+						userId: data.userId
+					}
+				}
+			}),
+		getOAuth2AuthorizationRequest: (data: { token: string }) =>
+			db.oAuth2AuthorizationRequest.findUniqueOrThrow({ where: { token: data.token } }),
+		getSession: (data: { key: string }) =>
+			db.session.findUnique({
+				include: {
+					user: {
+						include: {
+							apiKeyAuthorizationAccounts: true,
+							oAuth2AuthenticationAccounts: true,
+							oAuth2AuthorizationAccounts: true
+						}
+					}
+				},
+				where: { key: data.key }
+			}) as Promise<(Session & { user: TUser }) | null>,
+		getUser: (data: { email: string }) => db.user.findUnique({ where: { email: data.email } }),
+		updateOAuth2AuthenticationAccount: (data: OAuth2Account) =>
+			db.oAuth2AuthenticationAccount.update({
+				data,
+				where: {
+					userId_provider_accountId: {
+						accountId: data.accountId,
+						provider: data.provider,
+						userId: data.userId
 					}
 				}
 			}),
 		updateOAuth2AuthorizationAccount: (data: OAuth2Account) =>
 			db.oAuth2AuthorizationAccount.update({
+				data,
 				where: {
 					userId_provider_accountId: {
-						userId: data.userId,
+						accountId: data.accountId,
 						provider: data.provider,
-						accountId: data.accountId
-					}
-				},
-				data
-			}),
-		createApiKeyAuthorizationAccount: (data: {
-			userId: string
-			provider: string
-			accountId: string
-			apiKey: string
-		}) => db.apiKeyAuthorizationAccount.create({ data }),
-		deleteApiKeyAuthorizationAccount: (data: {
-			userId: string
-			provider: string
-			accountId: string
-		}) =>
-			db.apiKeyAuthorizationAccount.delete({
-				where: {
-					userId_provider_accountId: {
-						userId: data.userId,
-						provider: data.provider,
-						accountId: data.accountId
+						userId: data.userId
 					}
 				}
 			})

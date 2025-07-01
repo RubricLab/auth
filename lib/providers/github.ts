@@ -59,17 +59,17 @@ export const createGithubAuthenticationProvider = ({
 		},
 		getToken: async ({ code, redirectUri }) => {
 			const response = await fetch('https://github.com/login/oauth/access_token', {
-				method: 'POST',
-				headers: {
-					'Content-Type': 'application/json',
-					Accept: 'application/json'
-				},
 				body: JSON.stringify({
 					client_id: githubClientId,
 					client_secret: githubClientSecret,
 					code,
 					redirect_uri: redirectUri
-				})
+				}),
+				headers: {
+					Accept: 'application/json',
+					'Content-Type': 'application/json'
+				},
+				method: 'POST'
 			})
 
 			const data = await response.json()
@@ -81,15 +81,15 @@ export const createGithubAuthenticationProvider = ({
 
 			return {
 				accessToken: data.access_token,
-				refreshToken: '', // GitHub doesn't provide refresh tokens
-				expiresAt: new Date(Date.now() + 1000 * 60 * 60 * 24 * 365) // GitHub tokens don't expire by default
+				expiresAt: new Date(Date.now() + 1000 * 60 * 60 * 24 * 365), // GitHub tokens don't expire by default, // GitHub doesn't provide refresh tokens
+				refreshToken: ''
 			}
 		},
 		getUser: async ({ accessToken }) => {
 			const response = await fetch('https://api.github.com/user', {
 				headers: {
-					Authorization: `Bearer ${accessToken}`,
-					Accept: 'application/vnd.github.v3+json'
+					Accept: 'application/vnd.github.v3+json',
+					Authorization: `Bearer ${accessToken}`
 				}
 			})
 
@@ -102,8 +102,8 @@ export const createGithubAuthenticationProvider = ({
 
 			const emailResponse = await fetch('https://api.github.com/user/emails', {
 				headers: {
-					Authorization: `Bearer ${accessToken}`,
-					Accept: 'application/vnd.github.v3+json'
+					Accept: 'application/vnd.github.v3+json',
+					Authorization: `Bearer ${accessToken}`
 				}
 			})
 
@@ -142,17 +142,17 @@ export const createGithubAuthorizationProvider = ({
 		},
 		getToken: async ({ code, redirectUri }) => {
 			const response = await fetch('https://github.com/login/oauth/access_token', {
-				method: 'POST',
-				headers: {
-					'Content-Type': 'application/json',
-					Accept: 'application/json'
-				},
 				body: JSON.stringify({
 					client_id: githubClientId,
 					client_secret: githubClientSecret,
 					code,
 					redirect_uri: redirectUri
-				})
+				}),
+				headers: {
+					Accept: 'application/json',
+					'Content-Type': 'application/json'
+				},
+				method: 'POST'
 			})
 
 			const data = await response.json()
@@ -164,15 +164,15 @@ export const createGithubAuthorizationProvider = ({
 
 			return {
 				accessToken: data.access_token,
-				refreshToken: '', // GitHub doesn't provide refresh tokens
-				expiresAt: new Date(Date.now() + 1000 * 60 * 60 * 24 * 365) // GitHub tokens don't expire by default
+				expiresAt: new Date(Date.now() + 1000 * 60 * 60 * 24 * 365), // GitHub tokens don't expire by default, // GitHub doesn't provide refresh tokens
+				refreshToken: ''
 			}
 		},
 		getUser: async ({ accessToken }) => {
 			const response = await fetch('https://api.github.com/user', {
 				headers: {
-					Authorization: `Bearer ${accessToken}`,
-					Accept: 'application/vnd.github.v3+json'
+					Accept: 'application/vnd.github.v3+json',
+					Authorization: `Bearer ${accessToken}`
 				}
 			})
 
@@ -185,8 +185,8 @@ export const createGithubAuthorizationProvider = ({
 
 			const emailResponse = await fetch('https://api.github.com/user/emails', {
 				headers: {
-					Authorization: `Bearer ${accessToken}`,
-					Accept: 'application/vnd.github.v3+json'
+					Accept: 'application/vnd.github.v3+json',
+					Authorization: `Bearer ${accessToken}`
 				}
 			})
 

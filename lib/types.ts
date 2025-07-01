@@ -33,10 +33,7 @@ export type Oauth2AuthenticationProvider = {
 
 export type Oauth2AuthorizationProvider = {
 	method: 'oauth2'
-	getAuthorizationUrl: (options: {
-		redirectUri: string
-		state: string
-	}) => Promise<URL>
+	getAuthorizationUrl: (options: { redirectUri: string; state: string }) => Promise<URL>
 	getToken: (options: { code: string; redirectUri: string }) => Promise<Token>
 	getUser: (options: { accessToken: string }) => Promise<{
 		accountId: string

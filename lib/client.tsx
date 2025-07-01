@@ -1,6 +1,7 @@
 'use client'
 
-import React, { createContext, useContext, type ReactNode } from 'react'
+// biome-ignore lint/correctness/noUnusedImports: requires React
+import React, { createContext, type ReactNode, useContext } from 'react'
 import type { DatabaseProvider } from './types'
 
 export function CreateAuthContext<
@@ -9,13 +10,7 @@ export function CreateAuthContext<
 	const AuthContext = createContext<Session | null>(null)
 
 	return {
-		ClientAuthProvider({
-			session,
-			children
-		}: {
-			session: Session
-			children: ReactNode
-		}) {
+		ClientAuthProvider({ session, children }: { session: Session; children: ReactNode }) {
 			return <AuthContext.Provider value={session}>{children}</AuthContext.Provider>
 		},
 		useSession() {

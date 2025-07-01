@@ -18,9 +18,9 @@ export const createResendMagicLinkAuthenticationProvider = <Url extends string>(
 		sendEmail: async ({ email, url }) => {
 			await resend.emails.send({
 				from: fromEmail,
-				to: email,
+				html: html(url as Url),
 				subject,
-				html: html(url as Url)
+				to: email
 			})
 		}
 	})

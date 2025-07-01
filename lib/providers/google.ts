@@ -53,17 +53,17 @@ export const createGoogleAuthenticationProvider = ({
 		},
 		getToken: async ({ code, redirectUri }) => {
 			const response = await fetch('https://oauth2.googleapis.com/token', {
-				method: 'POST',
+				body: new URLSearchParams({
+					client_id: googleClientId,
+					client_secret: googleClientSecret,
+					code,
+					grant_type: 'authorization_code',
+					redirect_uri: redirectUri
+				}).toString(),
 				headers: {
 					'Content-Type': 'application/x-www-form-urlencoded'
 				},
-				body: new URLSearchParams({
-					code,
-					client_id: googleClientId,
-					client_secret: googleClientSecret,
-					redirect_uri: redirectUri,
-					grant_type: 'authorization_code'
-				}).toString()
+				method: 'POST'
 			})
 
 			const data = await response.json()
@@ -75,8 +75,8 @@ export const createGoogleAuthenticationProvider = ({
 
 			return {
 				accessToken: data.access_token,
-				refreshToken: data.refresh_token,
-				expiresAt: new Date(Date.now() + data.expires_in * 1000)
+				expiresAt: new Date(Date.now() + data.expires_in * 1000),
+				refreshToken: data.refresh_token
 			}
 		},
 		getUser: async ({ accessToken }) => {
@@ -93,16 +93,16 @@ export const createGoogleAuthenticationProvider = ({
 		},
 		refreshToken: async ({ refreshToken }) => {
 			const response = await fetch('https://oauth2.googleapis.com/token', {
-				method: 'POST',
-				headers: {
-					'Content-Type': 'application/x-www-form-urlencoded'
-				},
 				body: new URLSearchParams({
 					client_id: googleClientId,
 					client_secret: googleClientSecret,
-					refresh_token: refreshToken,
-					grant_type: 'refresh_token'
-				}).toString()
+					grant_type: 'refresh_token',
+					refresh_token: refreshToken
+				}).toString(),
+				headers: {
+					'Content-Type': 'application/x-www-form-urlencoded'
+				},
+				method: 'POST'
 			})
 
 			const data = await response.json()
@@ -114,8 +114,8 @@ export const createGoogleAuthenticationProvider = ({
 
 			return {
 				accessToken: data.access_token,
-				refreshToken: data.refresh_token,
-				expiresAt: new Date(Date.now() + data.expires_in * 1000)
+				expiresAt: new Date(Date.now() + data.expires_in * 1000),
+				refreshToken: data.refresh_token
 			}
 		}
 	})
@@ -145,17 +145,17 @@ export const createGoogleAuthorizationProvider = ({
 		},
 		getToken: async ({ code, redirectUri }) => {
 			const response = await fetch('https://oauth2.googleapis.com/token', {
-				method: 'POST',
+				body: new URLSearchParams({
+					client_id: googleClientId,
+					client_secret: googleClientSecret,
+					code,
+					grant_type: 'authorization_code',
+					redirect_uri: redirectUri
+				}).toString(),
 				headers: {
 					'Content-Type': 'application/x-www-form-urlencoded'
 				},
-				body: new URLSearchParams({
-					code,
-					client_id: googleClientId,
-					client_secret: googleClientSecret,
-					redirect_uri: redirectUri,
-					grant_type: 'authorization_code'
-				}).toString()
+				method: 'POST'
 			})
 
 			const data = await response.json()
@@ -167,8 +167,8 @@ export const createGoogleAuthorizationProvider = ({
 
 			return {
 				accessToken: data.access_token,
-				refreshToken: data.refresh_token,
-				expiresAt: new Date(Date.now() + data.expires_in * 1000)
+				expiresAt: new Date(Date.now() + data.expires_in * 1000),
+				refreshToken: data.refresh_token
 			}
 		},
 		getUser: async ({ accessToken }) => {
@@ -185,16 +185,16 @@ export const createGoogleAuthorizationProvider = ({
 		},
 		refreshToken: async ({ refreshToken }) => {
 			const response = await fetch('https://oauth2.googleapis.com/token', {
-				method: 'POST',
-				headers: {
-					'Content-Type': 'application/x-www-form-urlencoded'
-				},
 				body: new URLSearchParams({
 					client_id: googleClientId,
 					client_secret: googleClientSecret,
-					refresh_token: refreshToken,
-					grant_type: 'refresh_token'
-				}).toString()
+					grant_type: 'refresh_token',
+					refresh_token: refreshToken
+				}).toString(),
+				headers: {
+					'Content-Type': 'application/x-www-form-urlencoded'
+				},
+				method: 'POST'
 			})
 
 			const data = await response.json()
@@ -206,8 +206,8 @@ export const createGoogleAuthorizationProvider = ({
 
 			return {
 				accessToken: data.access_token,
-				refreshToken: data.refresh_token,
-				expiresAt: new Date(Date.now() + data.expires_in * 1000)
+				expiresAt: new Date(Date.now() + data.expires_in * 1000),
+				refreshToken: data.refresh_token
 			}
 		}
 	})

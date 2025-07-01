@@ -6,8 +6,8 @@ export function createVercelAuthenticationProvider() {
 		getUser: async ({ apiKey }) => {
 			const response = await fetch('https://api.vercel.com/v2/user', {
 				headers: {
-					Authorization: `Bearer ${apiKey}`,
-					Accept: '*/*'
+					Accept: '*/*',
+					Authorization: `Bearer ${apiKey}`
 				}
 			})
 
