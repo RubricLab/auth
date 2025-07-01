@@ -1,3 +1,4 @@
+- [2025-07-01] [consolidate biome check script](https://github.com/RubricLab/auth/commit/63983e6814f5509da6c4d89b8f450c28da8c7f84)
 - [2025-05-24] [userRecord from drizzle adapter](https://github.com/RubricLab/auth/commit/9c00cb6fd32ed0f50ff2e68de422c088c2770b62)
 - [2025-05-24] [client factory for correct generic session, client<>server partition](https://github.com/RubricLab/auth/commit/490266815969e139b194bcffb49ca2a6eb4e5f1f)
 - [2025-05-21] [required session or redirect, sign out redirect](https://github.com/RubricLab/auth/commit/79b99754578d3b1d91f9aa3645c48d8ec2653eb1)
