@@ -2,7 +2,7 @@
 	"dependencies": {
 		"@rubriclab/config": "*",
 		"@rubriclab/package": "*",
-		"resend": "^4.1.2"
+		"resend": "latest"
 	},
 	"exports": {
 		".": "./lib/index.ts",
