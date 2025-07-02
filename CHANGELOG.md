@@ -1,3 +1,4 @@
+- [2025-07-02] [bump](https://github.com/RubricLab/auth/commit/ccd5019b67e17e5e204e171691176730ed4eb1fd)
 - [2025-07-01] [run format](https://github.com/RubricLab/auth/commit/2ca0b3d04367f3ea92ddeb295da1c5adc71246a4)
 - [2025-07-01] [consolidate biome check script](https://github.com/RubricLab/auth/commit/63983e6814f5509da6c4d89b8f450c28da8c7f84)
 - [2025-05-24] [userRecord from drizzle adapter](https://github.com/RubricLab/auth/commit/9c00cb6fd32ed0f50ff2e68de422c088c2770b62)
