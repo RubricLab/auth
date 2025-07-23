@@ -3,8 +3,8 @@ import { redirect } from 'next/navigation'
 
 import type {
 	ApiKeyAuthorizationProvider,
-	AuthorizationProvider,
 	AuthUrl,
+	AuthorizationProvider,
 	DatabaseProvider as GenericDatabaseProvider,
 	MagicLinkAuthenticationProvider,
 	Oauth2AuthenticationProvider,
@@ -643,7 +643,6 @@ export function createAuth<
 						return new Response('Invalid authorization method', { status: 400 })
 					}
 				}
-				return new Response('Invalid method', { status: 400 })
 			}
 		}
 	}
