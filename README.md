@@ -115,7 +115,7 @@ Create an API route handler for authentication:
 
 ```typescript
 // app/api/auth/[...auth]/route.ts
-import { routes } from '@/lib/auth'
+import { routes } from '@/lib/auth/server'
 
 export const { GET } = routes
 ```
@@ -170,9 +170,7 @@ function DashboardContent() {
 ### 5. Add authentication actions
 
 ```typescript
-import { actions } from '@/lib/auth'
-
-const { signIn, sendMagicLink, signOut } = actions
+import { signIn, sendMagicLink, signOut } from '@/lib/auth/actions'
 
 // Sign in with OAuth2
 await signIn({
