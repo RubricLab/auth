@@ -46,6 +46,7 @@ const databaseProvider = drizzleAdapter(db)
 ### 2. Configure your auth instance
 
 ```typescript
+// lib/auth/server.ts
 import { createAuth } from '@rubriclab/auth'
 import { createGithubAuthenticationProvider } from '@rubriclab/auth/providers/github'
 import { createGoogleAuthenticationProvider } from '@rubriclab/auth/providers/google'
@@ -83,6 +84,31 @@ export const { routes, actions } = createAuth({
 })
 ```
 
+### 2.1 Server Action Stubs
+```typescript
+// lib/auth/actions.ts
+'use server'
+
+import { actions } from '@/lib/auth/server'
+
+export const { signIn, signOut, sendMagicLink, getAuthConstants, getSession } = actions
+```
+
+### 2.2 Client Stubs
+```typescript
+// lib/auth/client.ts
+'use client'
+
+import { CreateAuthContext } from '@rubriclab/auth/client'
+import type { DrizzleSession } from '@rubriclab/auth/providers/drizzle'
+// or (prisma): import type { User } from '@prisma/client'
+import type { users } from '@/lib/db/schema/auth'
+
+export const { ClientAuthProvider, useSession } =
+	CreateAuthContext<DrizzleSession<typeof users.$inferSelect>>()
+  // or (prisma): CreateAuthContext<User>()
+```
+
 ### 3. Set up your API routes
 
 Create an API route handler for authentication:
@@ -98,10 +124,10 @@ export const { GET } = routes
 
 ```typescript
 // Server Component
-import { actions } from '@/lib/auth'
+import { getSession } from '@/lib/auth/actions'
 
 export default async function DashboardPage() {
-  const session = await actions.getSession({
+  const session = await getSession({
     redirectUnauthorized: '/login'
   })
   
@@ -115,9 +141,7 @@ export default async function DashboardPage() {
 
 // Client Component
 'use client'
-import { CreateAuthContext } from '@rubriclab/auth/client'
-
-const { ClientAuthProvider, useSession } = CreateAuthContext<typeof session>()
+import { CreateAuthContext, useSession } from '@/lib/auth/client'
 
 export function DashboardClient({ session }: { session: typeof session }) {
   return (
