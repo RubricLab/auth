@@ -1,3 +1,4 @@
+- [2025-08-26] [drizzle-orm peer dep](https://github.com/RubricLab/auth/commit/fb84692d4d57816c9dccfae3d7fce113bd1a39e1)
 - [2025-07-23] [Scaffold README and LICENSE](https://github.com/RubricLab/auth/commit/7ad9ac8f05dc4aa3474a67be19ce3f0e7ebd5e01)
 - [2025-07-02] [bump](https://github.com/RubricLab/auth/commit/ccd5019b67e17e5e204e171691176730ed4eb1fd)
 - [2025-07-01] [run format](https://github.com/RubricLab/auth/commit/2ca0b3d04367f3ea92ddeb295da1c5adc71246a4)
