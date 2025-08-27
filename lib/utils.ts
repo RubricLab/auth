@@ -1,10 +1,12 @@
 import { cookies as nextCookies } from 'next/headers'
 import { redirect } from 'next/navigation'
 
+import { z } from 'zod/v4'
+
 import type {
 	ApiKeyAuthorizationProvider,
-	AuthUrl,
 	AuthorizationProvider,
+	AuthUrl,
 	DatabaseProvider as GenericDatabaseProvider,
 	MagicLinkAuthenticationProvider,
 	Oauth2AuthenticationProvider,
@@ -498,19 +500,14 @@ export function createAuth<
 					params
 				}: {
 					params: Promise<{
-						auth: [
-							method: 'authentication' | 'authorization',
-							provider:
-								| keyof OAuth2AuthenticationProviders
-								| keyof OAuth2AuthorizationProviders
-								| keyof MagicLinkAuthenticationProviders
-						]
+						auth: string[]
 					}>
 				}
 			) {
-				const {
-					auth: [method, provider]
-				} = await params
+				const [method, provider] = z
+					.tuple([z.enum(['authentication', 'authorization']), z.string()])
+					.parse(await params)
+
 				const { searchParams } = new URL(request.url)
 				const code = searchParams.get('code')
 				const state = searchParams.get('state')

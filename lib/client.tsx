@@ -1,5 +1,6 @@
 'use client'
 
+// biome-ignore lint/correctness/noUnusedImports: Import React
 import React, { createContext, type ReactNode, useContext } from 'react'
 import type { DatabaseProvider } from './types'
 

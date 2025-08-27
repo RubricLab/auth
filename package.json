@@ -2,7 +2,8 @@
 	"dependencies": {
 		"@rubriclab/config": "*",
 		"@rubriclab/package": "*",
-		"resend": "latest"
+		"resend": "latest",
+		"zod": "latest"
 	},
 	"exports": {
 		".": "./lib/index.ts",
@@ -28,5 +29,5 @@
 	"simple-git-hooks": {
 		"post-commit": "bun x @rubriclab/package post-commit"
 	},
-	"version": "0.0.50"
+	"version": "0.0.51"
 }
