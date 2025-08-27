@@ -504,8 +504,10 @@ export function createAuth<
 					}>
 				}
 			) {
-				const [method, provider] = z
-					.tuple([z.enum(['authentication', 'authorization']), z.string()])
+				const {
+					auth: [method, provider]
+				} = z
+					.object({ auth: z.tuple([z.enum(['authentication', 'authorization']), z.string()]) })
 					.parse(await params)
 
 				const { searchParams } = new URL(request.url)

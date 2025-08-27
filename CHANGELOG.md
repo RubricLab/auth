@@ -1,3 +1,4 @@
+- [2025-08-27] [oops!](https://github.com/RubricLab/auth/commit/1b8110f86fcb0a8b82190ecd45669acb26f2f90e)
 - [2025-08-27] [widen auth url params for next 15.5 and validate with zod](https://github.com/RubricLab/auth/commit/dea78c332be1601c9fdf7816b897f955a3fea17a)
 - [2025-08-26] [drizzle-orm peer dep](https://github.com/RubricLab/auth/commit/fb84692d4d57816c9dccfae3d7fce113bd1a39e1)
 - [2025-07-23] [Scaffold README and LICENSE](https://github.com/RubricLab/auth/commit/7ad9ac8f05dc4aa3474a67be19ce3f0e7ebd5e01)
