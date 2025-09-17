@@ -19,5 +19,6 @@ export {
 	createAuth,
 	createMagicLinkAuthenticationProvider,
 	createOauth2AuthenticationProvider,
-	createOauth2AuthorizationProvider
+	createOauth2AuthorizationProvider,
+	createApiKeyAuthorizationProvider
 } from './utils'
