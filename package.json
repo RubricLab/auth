@@ -2,8 +2,8 @@
 	"dependencies": {
 		"@rubriclab/config": "*",
 		"@rubriclab/package": "*",
-		"resend": "latest",
-		"zod": "latest"
+		"resend": "6.5.2",
+		"zod": "4.1.13"
 	},
 	"exports": {
 		".": "./lib/index.ts",
@@ -13,7 +13,7 @@
 	"main": "lib/index.ts",
 	"name": "@rubriclab/auth",
 	"peerDependencies": {
-		"drizzle-orm": "^0.44.5"
+		"drizzle-orm": "0.45.0"
 	},
 	"publishConfig": {
 		"access": "public"
@@ -29,5 +29,5 @@
 	"simple-git-hooks": {
 		"post-commit": "bun x @rubriclab/package post-commit"
 	},
-	"version": "0.0.53"
+	"version": "0.0.54"
 }

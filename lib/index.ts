@@ -16,9 +16,9 @@ export { createResendMagicLinkAuthenticationProvider } from './providers/resend'
 export { createVercelAuthenticationProvider } from './providers/vercel'
 export * from './types'
 export {
+	createApiKeyAuthorizationProvider,
 	createAuth,
 	createMagicLinkAuthenticationProvider,
 	createOauth2AuthenticationProvider,
-	createOauth2AuthorizationProvider,
-	createApiKeyAuthorizationProvider
+	createOauth2AuthorizationProvider
 } from './utils'
