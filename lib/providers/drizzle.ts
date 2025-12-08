@@ -1,5 +1,5 @@
 import { and, eq } from 'drizzle-orm'
-import type { NeonDatabase } from 'drizzle-orm/neon-serverless'
+import type { NodePgDatabase } from 'drizzle-orm/node-postgres'
 import { pgTable, primaryKey, timestamp, uuid, varchar } from 'drizzle-orm/pg-core'
 import type { Account, DatabaseProvider as GenericDatabaseProvider } from '../types'
 
@@ -81,7 +81,7 @@ const sessions = pgTable('sessions', {
 })
 
 export function drizzleAdapter<TUser extends typeof users>(
-	db: NeonDatabase<{
+	db: NodePgDatabase<{
 		apiKeyAuthorizationAccounts: typeof apiKeyAuthorizationAccounts
 		magicLinkRequests: typeof magicLinkRequests
 		oAuth2AuthenticationAccounts: typeof oAuth2AuthenticationAccounts

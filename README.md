@@ -37,7 +37,7 @@ const databaseProvider = prismaAdapter(prisma)
 
 // OR using Drizzle
 import { drizzleAdapter } from '@rubriclab/auth/providers/drizzle'
-import { drizzle } from 'drizzle-orm/neon-serverless'
+import { drizzle } from 'drizzle-orm/node-postgres'
 
 const db = drizzle(env.DATABASE_URL)
 const databaseProvider = drizzleAdapter(db)
@@ -268,7 +268,6 @@ RESEND_API_KEY=your_resend_api_key
 
 - **Drizzle** (`@rubriclab/auth/providers/drizzle`)
   - Drizzle ORM support with PostgreSQL
-  - Optimized for Neon serverless
   - Lightweight and fast
 
 ## Database Schema
